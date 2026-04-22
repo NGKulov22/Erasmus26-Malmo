@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Flask App{% endblock %}</title>
+    <style>
+        nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .auth-links {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+
+        .auth-button {
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 6px 12px;
+            text-decoration: none;
+            color: #111;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="{{ url_for('main.home') }}">Home</a>
+            <a href="{{ url_for('main.about') }}">About</a>
+            <a href="{{ url_for('main.contact') }}">Contact</a>
+            <div class="auth-links">
+                <a class="auth-button" href="{{ url_for('auth.login') }}">Login</a>
+                <a class="auth-button" href="{{ url_for('auth.register') }}">Register</a>
+            </div>
+        </nav>
+        <hr />
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
