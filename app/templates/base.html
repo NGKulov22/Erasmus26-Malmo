@@ -54,9 +54,31 @@
                 <span>Profile</span>
             </a>
         </div>
+
+        <div class="auth-actions">
+            {% if is_logged_in %}
+                <span class="welcome-chip">Hi, {{ current_user.full_name.split(' ')[0] }}</span>
+                <form method="post" action="{{ url_for('auth_bp.logout') }}">
+                    <button type="submit" class="auth-btn">Log Out</button>
+                </form>
+            {% else %}
+                <a href="{{ url_for('auth_bp.login') }}" class="auth-btn auth-link">Log In</a>
+                <a href="{{ url_for('auth_bp.register') }}" class="auth-btn auth-link secondary">Register</a>
+            {% endif %}
+        </div>
     </nav>
 
     <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         {% block content %}
         {% endblock %}
     </main>

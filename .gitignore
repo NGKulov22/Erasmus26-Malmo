@@ -16,6 +16,7 @@ env/
 # Flask runtime files
 instance/
 .webassets-cache
+*.db
 
 # Packaging and build
 build/

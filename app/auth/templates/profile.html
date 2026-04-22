@@ -1,10 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}Profile | Malmo Connect{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='pages.css') }}">
+
+<section class="page-wrap">
+    <div class="page-card" style="max-width: 760px; margin: 0 auto;">
+        <div class="page-head">
+            <h1 class="page-title">Your Profile</h1>
+            <p class="page-subtitle">Stored in SQLite and used for simple personalization.</p>
+        </div>
+
+        <div class="stack-form">
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" value="{{ user.full_name }}" disabled>
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="text" value="{{ user.email }}" disabled>
+            </div>
+
+            <div>
+                <strong>Interests:</strong>
+                {% if user.interests %}
+                    {% for interest in user.interests %}
+                        <span class="info-pill">{{ interest }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span class="muted">No interests yet.</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <p class="link-line">
+            Want to see your saved places?
+            <a href="{{ url_for('main_bp.saved') }}">Open Saved</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

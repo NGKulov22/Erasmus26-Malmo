@@ -1,10 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}Saved | Malmo Connect{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='pages.css') }}">
+
+<section class="page-wrap">
+    <div class="page-head">
+        <h1 class="page-title">Your Saved Places</h1>
+        <p class="page-subtitle">Saved place IDs are persisted in SQLite with your user profile.</p>
+    </div>
+
+    {% if saved_places %}
+        <div class="simple-grid">
+            {% for place in saved_places %}
+                <article class="page-card">
+                    <img class="place-cover" src="{{ place.image_url }}" alt="{{ place.name }}">
+                    <h3>{{ place.name }}</h3>
+                    <p class="place-meta">{{ place.location }} • {{ place.price_label }}</p>
+                    <p>{{ place.description }}</p>
+                    <a href="{{ url_for('main_bp.places') }}" class="link-line">Manage in Places</a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="page-card empty-state">
+            <p>You have no saved places yet.</p>
+            <p><a href="{{ url_for('main_bp.places') }}">Browse places</a> and save a few.</p>
+        </div>
+    {% endif %}
+
+    {% if suggested_places %}
+        <div class="page-head" style="margin-top: 24px;">
+            <h2 class="page-title" style="font-size: 1.6rem;">Suggestions by Interests</h2>
+        </div>
+
+        <div class="simple-grid">
+            {% for place in suggested_places %}
+                <article class="page-card">
+                    <h3>{{ place.name }}</h3>
+                    <p class="place-meta">{{ place.location }}</p>
+                    <p>{{ place.description }}</p>
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,10 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}Events | Malmo Connect{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='pages.css') }}">
+
+<section class="page-wrap">
+    <div class="page-head">
+        <h1 class="page-title">Upcoming Events</h1>
+        <p class="page-subtitle">Simple, server-rendered event feed for students in Malmo.</p>
+    </div>
+
+    {% for event in events %}
+        <article class="page-card">
+            <h3>{{ event.title }}</h3>
+            <p class="place-meta">{{ event.date_label }} • {{ event.time_label }} • {{ event.location }}</p>
+            <p>{{ event.description }}</p>
+            <p class="muted">Participants: {{ event.participants }}</p>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}

@@ -1,10 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}Register | Malmo Connect{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='pages.css') }}">
+
+<section class="page-wrap">
+    <div class="page-card" style="max-width: 700px; margin: 0 auto;">
+        <div class="page-head">
+            <h1 class="page-title">Create Account</h1>
+            <p class="page-subtitle">Your profile is stored in SQLite and used for personalized recommendations.</p>
+        </div>
+
+        <form method="post" class="stack-form">
+            <div class="input-group">
+                <label for="full_name">Full Name</label>
+                <input id="full_name" name="full_name" type="text" required>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="interests">Interests (comma separated)</label>
+                    <input id="interests" name="interests" type="text" placeholder="study, coffee, social">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input id="confirm_password" name="confirm_password" type="password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="primary-btn">Create Account</button>
+        </form>
+
+        <p class="link-line">
+            Already registered?
+            <a href="{{ url_for('auth_bp.login') }}">Log in here</a>
+        </p>
+    </div>
+</section>
+{% endblock %}

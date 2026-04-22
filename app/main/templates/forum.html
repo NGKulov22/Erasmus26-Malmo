@@ -1,10 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}Forum | Malmo Connect{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='pages.css') }}">
+
+<section class="page-wrap">
+    <div class="page-head">
+        <h1 class="page-title">Community Forum</h1>
+        <p class="page-subtitle">Read what other students are discussing right now.</p>
+    </div>
+
+    {% for post in posts %}
+        <article class="page-card">
+            <h3>{{ post.title }}</h3>
+            <p class="place-meta">by {{ post.author }} • {{ post.time_ago }}</p>
+            <p>{{ post.content }}</p>
+
+            <div>
+                <span class="info-pill">{{ post.category }}</span>
+                <span class="muted">{{ post.replies }} replies</span>
+            </div>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}

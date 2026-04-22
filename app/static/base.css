@@ -52,6 +52,7 @@ body {
     font-size: 2rem;
     font-weight: 700;
     background: linear-gradient(90deg, #9fd9cf, #f19a92);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -61,6 +62,62 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+.auth-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.welcome-chip {
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #f3f7fb;
+    color: #2f3b4a;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.auth-btn {
+    border: 0;
+    border-radius: 10px;
+    background: #2f3b4a;
+    color: #fff;
+    font-weight: 600;
+    padding: 9px 12px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.auth-btn.secondary {
+    background: #f2b4ad;
+}
+
+.flash-container {
+    padding: 16px 38px 0;
+}
+
+.flash-message {
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.flash-message.success {
+    background: #daf2e9;
+    color: #1f5c48;
+}
+
+.flash-message.error {
+    background: #f8dfde;
+    color: #7a2e2a;
+}
+
+.flash-message.warning {
+    background: #f6efdc;
+    color: #725b1a;
 }
 
 .nav-item {
@@ -128,6 +185,10 @@ body {
     .nav-item {
         border-radius: 18px;
     }
+
+    .auth-actions {
+        display: none;
+    }
 }
 
 @media (max-width: 700px) {
@@ -142,5 +203,9 @@ body {
         width: 100%;
         justify-content: center;
         flex-wrap: wrap;
+    }
+
+    .flash-container {
+        padding: 14px 18px 0;
     }
 }
