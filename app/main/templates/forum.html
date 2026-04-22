@@ -1,27 +1,208 @@
 {% extends "base.html" %}
 
-{% block title %}Forum | Malmo Connect{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='forum.css') }}">
+{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='places.css') }}">
+<div class="forum-page">
 
-<section class="page-wrap">
-    <div class="page-head">
-        <h1 class="page-title">Community Forum</h1>
-        <p class="page-subtitle">Read what other students are discussing right now.</p>
+    <section class="forum-hero">
+        <div>
+            <h1>Community Forum</h1>
+            <p>Ask questions, share experiences, connect with others</p>
+        </div>
+
+        <a href="#" class="new-post-btn">
+            <i class="fa-solid fa-plus"></i>
+            New Post
+        </a>
+    </section>
+
+    <div class="search-bar">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search discussions...">
     </div>
 
-    {% for post in posts %}
-        <article class="page-card">
-            <h3>{{ post.title }}</h3>
-            <p class="place-meta">by {{ post.author }} • {{ post.time_ago }}</p>
-            <p>{{ post.content }}</p>
+    <section class="forum-filters">
+        <div class="filter-group">
+            <h3>Category</h3>
 
-            <div>
-                <span class="info-pill">{{ post.category }}</span>
-                <span class="muted">{{ post.replies }} replies</span>
+            <div class="filter-tags">
+                <button class="filter-tag active">All</button>
+                <button class="filter-tag">Living</button>
+                <button class="filter-tag">Education</button>
+                <button class="filter-tag">Social</button>
+                <button class="filter-tag">Jobs</button>
+                <button class="filter-tag">Housing</button>
+                <button class="filter-tag">Travel</button>
+            </div>
+        </div>
+
+        <div class="sort-row">
+            <span>Sort by:</span>
+
+            <button class="sort-btn active">
+                <i class="fa-solid fa-arrow-trend-up"></i>
+                Hot
+            </button>
+
+            <button class="sort-btn">
+                <i class="fa-regular fa-clock"></i>
+                New
+            </button>
+
+            <button class="sort-btn">Top</button>
+        </div>
+    </section>
+
+    <section class="forum-list">
+
+        <article class="forum-card">
+            <div class="vote-box">
+                <button class="vote-btn">
+                    <i class="fa-regular fa-thumbs-up"></i>
+                </button>
+                <span>45</span>
+            </div>
+
+            <div class="forum-content">
+                <div class="forum-meta">
+                    <img src="{{ url_for('static', filename='images/user1.jpg') }}" alt="Maria">
+                    <div class="meta-text">
+                        <span class="author">Maria K.</span>
+                        <span class="dot">•</span>
+                        <span>2h ago</span>
+                        <span class="category-pill">Living</span>
+                    </div>
+                </div>
+
+                <h2 class="forum-title">
+                    Best grocery stores for international students?
+                </h2>
+
+                <p class="forum-description">
+                    Just moved here and wondering where locals shop for affordable groceries.
+                    Any recommendations?
+                </p>
+
+                <div class="tag-list">
+                    <span>#groceries</span>
+                    <span>#budget</span>
+                    <span>#shopping</span>
+                </div>
+
+                <div class="forum-footer">
+                    <span><i class="fa-regular fa-message"></i> 23 replies</span>
+                </div>
             </div>
         </article>
-    {% endfor %}
-</section>
+
+        <article class="forum-card">
+            <div class="vote-box">
+                <button class="vote-btn">
+                    <i class="fa-regular fa-thumbs-up"></i>
+                </button>
+                <span>31</span>
+            </div>
+
+            <div class="forum-content">
+                <div class="forum-meta">
+                    <img src="{{ url_for('static', filename='images/user2.jpg') }}" alt="Ahmed">
+                    <div class="meta-text">
+                        <span class="author">Ahmed S.</span>
+                        <span class="dot">•</span>
+                        <span>5h ago</span>
+                        <span class="category-pill blue">Education</span>
+                    </div>
+                </div>
+
+                <h2 class="forum-title">
+                    Anyone want to start a study group for Swedish?
+                </h2>
+
+                <p class="forum-description">
+                    Looking to practice Swedish conversation in a relaxed setting.
+                    Thinking weekly meetups at a café!
+                </p>
+
+                <div class="tag-list">
+                    <span>#language</span>
+                    <span>#study group</span>
+                    <span>#swedish</span>
+                </div>
+
+                <div class="forum-footer">
+                    <span><i class="fa-regular fa-message"></i> 12 replies</span>
+                </div>
+            </div>
+        </article>
+
+        <article class="forum-card">
+            <div class="vote-box">
+                <button class="vote-btn">
+                    <i class="fa-regular fa-thumbs-up"></i>
+                </button>
+                <span>67</span>
+            </div>
+
+            <div class="forum-content">
+                <div class="forum-meta">
+                    <img src="{{ url_for('static', filename='images/user3.jpg') }}" alt="Sophie">
+                    <div class="meta-text">
+                        <span class="author">Sophie T.</span>
+                        <span class="dot">•</span>
+                        <span>1d ago</span>
+                        <span class="category-pill">Housing</span>
+                    </div>
+                </div>
+
+                <h2 class="forum-title">
+                    Part-time jobs for English speakers in Malmö?
+                </h2>
+
+                <p class="forum-description">
+                    Looking for student-friendly jobs where Swedish isn't required.
+                    Any cafés or stores hiring?
+                </p>
+
+                <div class="tag-list">
+                    <span>#jobs</span>
+                    <span>#students</span>
+                    <span>#work</span>
+                </div>
+
+                <div class="forum-footer">
+                    <span><i class="fa-regular fa-message"></i> 41 replies</span>
+                </div>
+            </div>
+        </article>
+
+    </section>
+</div>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    // Category buttons
+    const categoryButtons = document.querySelectorAll(".filter-tag");
+
+    categoryButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            categoryButtons.forEach(btn => btn.classList.remove("active"));
+            button.classList.add("active");
+        });
+    });
+
+    // Sort buttons
+    const sortButtons = document.querySelectorAll(".sort-btn");
+
+    sortButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            sortButtons.forEach(btn => btn.classList.remove("active"));
+            button.classList.add("active");
+        });
+    });
+
+});
+</script>
 {% endblock %}
