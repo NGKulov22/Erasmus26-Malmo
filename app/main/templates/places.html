@@ -1,61 +1,315 @@
 {% extends "base.html" %}
 
-{% block title %}Places | Malmo Connect{% endblock %}
-
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='places.css') }}">
+{% endblock %}
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='pages.css') }}">
 
-<section class="page-wrap">
-    <div class="page-head">
-        <h1 class="page-title">Explore Places</h1>
-        <p class="page-subtitle">Find cafes, study spots, and social locations around Malmo.</p>
+<div class="places-page">
+
+    <!-- HERO -->
+    <section class="places-hero">
+        <h1>Discover Places</h1>
+        <p>Explore the best spots in Malmö curated for students and newcomers</p>
+    </section>
+
+    <!-- FILTERS -->
+    <section class="filter-box">
+        <div class="filter-title">
+            <i class="fa-solid fa-filter"></i>
+            <h2>Filters</h2>
+        </div>
+
+        <div class="filter-group">
+            <h3>Category</h3>
+            <div class="filter-tags">
+                <button class="filter-tag active">All</button>
+                <button class="filter-tag">Cafés</button>
+                <button class="filter-tag">Restaurants</button>
+                <button class="filter-tag">Bars</button>
+                <button class="filter-tag">Outdoor</button>
+                <button class="filter-tag">Study</button>
+                <button class="filter-tag">Culture</button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <h3>Neighborhood</h3>
+            <div class="filter-tags">
+                <button class="filter-tag active secondary">All</button>
+                <button class="filter-tag secondary">Centrum</button>
+                <button class="filter-tag secondary">Västra Hamnen</button>
+                <button class="filter-tag secondary">Möllevången</button>
+                <button class="filter-tag secondary">Gamla Väster</button>
+                <button class="filter-tag secondary">Limhamn</button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <h3>Price Range</h3>
+            <div class="filter-tags">
+                <button class="filter-tag gold active">$</button>
+                <button class="filter-tag gold">$$</button>
+                <button class="filter-tag gold">$$$</button>
+            </div>
+        </div>
+    </section>
+
+<p class="places-count">
+    <span id="places-count-number">8</span> places found
+</p>
+
+    <!-- PLACES GRID -->
+    <section class="places-grid">
+
+        <div class="place-card">
+            <div class="place-image">
+                <img src="{{ url_for('static', filename='images/cafe.jpg') }}" alt="Lilla Kafferosteriet">
+                <button class="save-btn">
+                    <i class="fa-regular fa-bookmark"></i>
+                </button>
+
+                <div class="rating-pill">
+                    <i class="fa-solid fa-star"></i>
+                    <span>4.8</span>
+                    <small>(245)</small>
+                </div>
+            </div>
+
+            <div class="place-content">
+                <div class="place-header">
+                    <h3>Lilla Kafferosteriet</h3>
+                    <span class="price">$$</span>
+                </div>
+
+                <p class="place-location">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Gamla Väster
+                </p>
+
+                <p class="place-description">
+                    Charming local coffee roastery with excellent espresso and pastries.
+                </p>
+
+                <div class="place-tags">
+                    <span>Cozy</span>
+                    <span>WiFi</span>
+                    <span>Student Discount</span>
+                </div>
+            </div>
+        </div>
+            <div class="place-card">
+    <div class="place-image">
+        <img src="{{ url_for('static', filename='images/library.jpg') }}" alt="Malmö Stadsbibliotek">
+        <button class="save-btn">
+            <i class="fa-regular fa-bookmark"></i>
+        </button>
+
+        <div class="rating-pill">
+            <i class="fa-solid fa-star"></i>
+            <span>4.9</span>
+            <small>(421)</small>
+        </div>
     </div>
 
-    <form method="get" class="filter-bar">
-        <input type="text" name="q" placeholder="Search by name, location or tag" value="{{ query }}">
-
-        <select name="category">
-            {% for category in categories %}
-                <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>
-                    {{ category|capitalize }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <button class="primary-btn" type="submit">Filter</button>
-    </form>
-
-    {% if places %}
-        <div class="simple-grid">
-            {% for place in places %}
-                <article class="page-card">
-                    <img class="place-cover" src="{{ place.image_url }}" alt="{{ place.name }}">
-                    <h3>{{ place.name }}</h3>
-                    <p class="place-meta">{{ place.location }} • {{ place.price_label }} • ⭐ {{ place.rating }}</p>
-                    <p>{{ place.description }}</p>
-
-                    <p>
-                        {% for tag in place.tags %}
-                            <span class="info-pill">{{ tag }}</span>
-                        {% endfor %}
-                    </p>
-
-                    {% if is_logged_in %}
-                        <form method="post" action="{{ url_for('main_bp.toggle_place_save', place_id=place.id) }}" class="inline-form">
-                            <button type="submit" class="primary-btn">
-                                {% if place.id in saved_ids %}Remove from Saved{% else %}Save Place{% endif %}
-                            </button>
-                        </form>
-                    {% else %}
-                        <a class="primary-btn" href="{{ url_for('auth_bp.login', next=request.path) }}">Log in to save</a>
-                    {% endif %}
-                </article>
-            {% endfor %}
+    <div class="place-content">
+        <div class="place-header">
+            <h3>Malmö Stadsbibliotek</h3>
+            <span class="price">$</span>
         </div>
-    {% else %}
-        <div class="page-card empty-state">
-            <p>No places found for your current filters.</p>
+
+        <p class="place-location">
+            <i class="fa-solid fa-location-dot"></i>
+            Centrum
+        </p>
+
+        <p class="place-description">
+            Modern city library with excellent study facilities and reading rooms.
+        </p>
+
+        <div class="place-tags">
+            <span>Quiet</span>
+            <span>WiFi</span>
+            <span>Free</span>
         </div>
-    {% endif %}
-</section>
+    </div>
+</div>
+
+<div class="place-card">
+    <div class="place-image">
+        <img src="{{ url_for('static', filename='images/bar.jpg') }}" alt="Möllan Bar">
+        <button class="save-btn">
+            <i class="fa-regular fa-bookmark"></i>
+        </button>
+
+        <div class="rating-pill">
+            <i class="fa-solid fa-star"></i>
+            <span>4.6</span>
+            <small>(298)</small>
+        </div>
+    </div>
+
+    <div class="place-content">
+        <div class="place-header">
+            <h3>Möllan Bar</h3>
+            <span class="price">$$</span>
+        </div>
+
+        <p class="place-location">
+            <i class="fa-solid fa-location-dot"></i>
+            Möllevången
+        </p>
+
+        <p class="place-description">
+            Casual neighborhood bar with live music and friendly atmosphere.
+        </p>
+
+        <div class="place-tags">
+            <span>Live Music</span>
+            <span>Social</span>
+            <span>Local</span>
+        </div>
+    </div>
+</div>
+
+<div class="place-card">
+    <div class="place-image">
+        <img src="{{ url_for('static', filename='images/falafel.jpg') }}" alt="Falafel No. 1">
+        <button class="save-btn">
+            <i class="fa-regular fa-bookmark"></i>
+        </button>
+
+        <div class="rating-pill">
+            <i class="fa-solid fa-star"></i>
+            <span>4.8</span>
+            <small>(678)</small>
+        </div>
+    </div>
+
+    <div class="place-content">
+        <div class="place-header">
+            <h3>Falafel No. 1</h3>
+            <span class="price">$</span>
+        </div>
+
+        <p class="place-location">
+            <i class="fa-solid fa-location-dot"></i>
+            Möllevången
+        </p>
+
+        <p class="place-description">
+            Legendary falafel spot loved by students and locals alike.
+        </p>
+
+        <div class="place-tags">
+            <span>Fast Food</span>
+            <span>Budget</span>
+            <span>Authentic</span>
+        </div>
+    </div>
+</div>
+        <div class="place-card">
+            <div class="place-image">
+                <img src="{{ url_for('static', filename='images/beach.jpg') }}" alt="Västra Hamnen Beach">
+                <button class="save-btn">
+                    <i class="fa-regular fa-bookmark"></i>
+                </button>
+
+                <div class="rating-pill">
+                    <i class="fa-solid fa-star"></i>
+                    <span>4.9</span>
+                    <small>(532)</small>
+                </div>
+            </div>
+
+            <div class="place-content">
+                <div class="place-header">
+                    <h3>Västra Hamnen Beach</h3>
+                    <span class="price">$</span>
+                </div>
+
+                <p class="place-location">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Västra Hamnen
+                </p>
+
+                <p class="place-description">
+                    Beautiful waterfront area perfect for sunset walks and swimming.
+                </p>
+
+                <div class="place-tags">
+                    <span>Nature</span>
+                    <span>Sunset</span>
+                    <span>Free</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="place-card">
+            <div class="place-image">
+                <img src="{{ url_for('static', filename='images/foodhall.jpg') }}" alt="Malmö Saluhall">
+                <button class="save-btn">
+                    <i class="fa-regular fa-bookmark"></i>
+                </button>
+
+                <div class="rating-pill">
+                    <i class="fa-solid fa-star"></i>
+                    <span>4.7</span>
+                    <small>(389)</small>
+                </div>
+            </div>
+
+            <div class="place-content">
+                <div class="place-header">
+                    <h3>Malmö Saluhall</h3>
+                    <span class="price">$$$</span>
+                </div>
+
+                <p class="place-location">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Centrum
+                </p>
+
+                <p class="place-description">
+                    Indoor food market with diverse cuisines and fresh produce.
+                </p>
+
+                <div class="place-tags">
+                    <span>Food Market</span>
+                    <span>Variety</span>
+                    <span>Lunch</span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
+    <script>
+    const filterButtons = document.querySelectorAll('.filter-tag');
+    const placeCards = document.querySelectorAll('.place-card');
+    const countElement = document.getElementById('places-count-number');
+
+    function updateCount() {
+        const visibleCards = [...placeCards].filter(card => {
+            return card.style.display !== 'none';
+        });
+
+        countElement.textContent = visibleCards.length;
+    }
+
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            button.parentElement.querySelectorAll('.filter-tag').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            button.classList.add('active');
+
+            /* Later you can add your filtering logic here */
+            updateCount();
+        });
+    });
+
+    updateCount();
+</script>
 {% endblock %}
