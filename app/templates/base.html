@@ -1,45 +1,65 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
-<nav class="navbar">
-    <div class="logo-section">
-        <div class="logo-circle">M</div>
-        <span class="logo-text">Malmö Connect</span>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Malmö Connect{% endblock %}</title>
 
-    <div class="nav-links">
-        <a href="{{ url_for('main_bp.home') }}"
-           class="nav-item {% if request.endpoint == 'main_bp.home' %}active{% endif %}">
-            <i class="fa-solid fa-house"></i>
-            <span>Home</span>
-        </a>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
 
-        <a href="{{ url_for('main_bp.places') }}"
-           class="nav-item {% if request.endpoint == 'main_bp.places' %}active{% endif %}">
-            <i class="fa-regular fa-map"></i>
-            <span>Places</span>
-        </a>
+    <nav class="navbar">
+        <div class="logo-section">
+            <div class="logo-circle">M</div>
+            <span class="logo-text">Malmö Connect</span>
+        </div>
 
-        <a href="{{ url_for('main_bp.forum') }}"
-           class="nav-item {% if request.endpoint == 'main_bp.forum' %}active{% endif %}">
-            <i class="fa-regular fa-message"></i>
-            <span>Forum</span>
-        </a>
+        <div class="nav-links">
+            <a href="{{ url_for('main_bp.home') }}"
+               class="nav-item {% if request.endpoint == 'main_bp.home' %}active{% endif %}">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+            </a>
 
-        <a href="{{ url_for('main_bp.events') }}"
-           class="nav-item {% if request.endpoint == 'main_bp.events' %}active{% endif %}">
-            <i class="fa-regular fa-calendar"></i>
-            <span>Events</span>
-        </a>
+            <a href="{{ url_for('main_bp.places') }}"
+               class="nav-item {% if request.endpoint == 'main_bp.places' %}active{% endif %}">
+                <i class="fa-regular fa-map"></i>
+                <span>Places</span>
+            </a>
 
-        <a href="{{ url_for('main_bp.saved') }}"
-           class="nav-item {% if request.endpoint == 'main_bp.saved' %}active{% endif %}">
-            <i class="fa-regular fa-bookmark"></i>
-            <span>Saved</span>
-        </a>
+            <a href="{{ url_for('main_bp.forum') }}"
+               class="nav-item {% if request.endpoint == 'main_bp.forum' %}active{% endif %}">
+                <i class="fa-regular fa-message"></i>
+                <span>Forum</span>
+            </a>
 
-        <a href="{{ url_for('auth_bp.profile') }}"
-           class="nav-item {% if request.endpoint == 'auth_bp.profile' %}active{% endif %}">
-            <i class="fa-regular fa-user"></i>
-            <span>Profile</span>
-        </a>
-    </div>
-</nav>
+            <a href="{{ url_for('main_bp.events') }}"
+               class="nav-item {% if request.endpoint == 'main_bp.events' %}active{% endif %}">
+                <i class="fa-regular fa-calendar"></i>
+                <span>Events</span>
+            </a>
+
+            <a href="{{ url_for('main_bp.saved') }}"
+               class="nav-item {% if request.endpoint == 'main_bp.saved' %}active{% endif %}">
+                <i class="fa-regular fa-bookmark"></i>
+                <span>Saved</span>
+            </a>
+
+            <a href="{{ url_for('auth_bp.profile') }}"
+               class="nav-item {% if request.endpoint == 'auth_bp.profile' %}active{% endif %}">
+                <i class="fa-regular fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+</body>
+</html>

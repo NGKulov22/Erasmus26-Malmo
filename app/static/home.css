@@ -1,0 +1,352 @@
+.home-page {
+    padding: 40px 38px 80px;
+}
+
+/* HERO */
+.hero-section {
+    text-align: center;
+    padding: 80px 20px 90px;
+}
+
+.hero-title {
+    font-size: 5rem;
+    font-weight: 800;
+    margin-bottom: 24px;
+    background: linear-gradient(90deg, #cbb1a9, #f08f8a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 2rem;
+    color: #3d4c63;
+    margin-bottom: 40px;
+}
+
+.hero-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 22px 42px;
+    border-radius: 24px;
+    background: linear-gradient(90deg, #9ddfd5, #f29289);
+    color: white;
+    text-decoration: none;
+    font-size: 1.45rem;
+    font-weight: 700;
+    box-shadow: 0 14px 30px rgba(157, 223, 213, 0.28);
+    transition: all 0.28s ease;
+}
+
+.hero-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 18px 35px rgba(242, 146, 137, 0.35);
+}
+
+/* GENERAL SECTION */
+.section-block {
+    margin-bottom: 70px;
+}
+
+.section-header,
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.section-title {
+    justify-content: flex-start;
+    gap: 12px;
+}
+
+.section-title i {
+    font-size: 1.8rem;
+    color: #f09087;
+}
+
+.section-title h2 {
+    font-size: 2.4rem;
+    color: #11284a;
+    font-weight: 800;
+}
+
+.view-all {
+    text-decoration: none;
+    font-size: 1.5rem;
+    color: #f3a0a2;
+    font-weight: 700;
+    transition: 0.25s ease;
+}
+
+.view-all:hover {
+    transform: translateX(4px);
+}
+
+.view-all.teal {
+    color: #95ddd4;
+}
+
+/* TOPICS */
+.topics-grid {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+}
+
+.topic-card {
+    height: 170px;
+    border-radius: 28px;
+    padding: 34px 30px;
+    color: white;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+    cursor: pointer;
+}
+
+.topic-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 18px 35px rgba(0,0,0,0.14);
+}
+
+.topic-card i {
+    font-size: 2.5rem;
+    margin-bottom: 26px;
+}
+
+.topic-card h3 {
+    font-size: 1.9rem;
+    font-weight: 700;
+}
+
+.topic-card.mint {
+    background: linear-gradient(135deg, #a7ddd1, #d8ddaf);
+}
+
+.topic-card.peach {
+    background: linear-gradient(135deg, #f1c6ba, #eab0b4);
+}
+
+.topic-card.sand {
+    background: linear-gradient(135deg, #e9dfb2, #e9d0ba);
+}
+
+.topic-card.coral {
+    background: linear-gradient(135deg, #eba9af, #ee8d8a);
+}
+
+/* PLACE CARDS */
+.places-grid {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+}
+
+.place-card {
+    background: white;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.place-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 18px 36px rgba(0,0,0,0.14);
+}
+
+.place-image {
+    position: relative;
+    height: 240px;
+}
+
+.place-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.rating-badge {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 700;
+    color: #34435d;
+}
+
+.rating-badge i {
+    color: #f2b203;
+}
+
+.place-content {
+    padding: 26px;
+}
+
+.place-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.place-top h3 {
+    font-size: 2rem;
+    color: #12284a;
+}
+
+.price {
+    color: #f08e89;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.free {
+    font-size: 1.3rem;
+}
+
+.place-location {
+    color: #526074;
+    font-size: 1.25rem;
+    margin-bottom: 18px;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.tags span {
+    background: #ece8cf;
+    padding: 8px 16px;
+    border-radius: 999px;
+    color: #34435d;
+    font-weight: 600;
+}
+
+/* BOTTOM GRID */
+.double-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 34px;
+}
+
+.event-card,
+.forum-card {
+    background: white;
+    border-radius: 26px;
+    padding: 28px;
+    margin-top: 24px;
+    display: flex;
+    gap: 22px;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.event-card:hover,
+.forum-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 16px 34px rgba(0,0,0,0.14);
+}
+
+.event-date {
+    width: 78px;
+    min-width: 78px;
+    border-radius: 24px;
+    background: #ef9895;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.day {
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.month {
+    font-size: 1.1rem;
+}
+
+.event-info h3,
+.forum-info h3 {
+    font-size: 1.8rem;
+    color: #12284a;
+    margin-bottom: 10px;
+}
+
+.event-info p,
+.forum-info p {
+    color: #546174;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.forum-votes {
+    width: 62px;
+    min-width: 62px;
+    height: 62px;
+    border-radius: 18px;
+    background: #ece7cb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: #2f3b4a;
+    font-size: 1.4rem;
+}
+
+.forum-meta {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 10px;
+}
+
+.forum-tag {
+    background: #dff4ef;
+    color: #3f6770;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.forum-tag.blue {
+    background: #dfeef7;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+    .topics-grid,
+    .places-grid,
+    .double-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 800px) {
+    .hero-title {
+        font-size: 3rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+    }
+
+    .topics-grid,
+    .places-grid,
+    .double-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-page {
+        padding: 24px 18px 50px;
+    }
+}

@@ -7,6 +7,9 @@ from . import main_bp
 def home():
     return render_template("home.html")
 
+@main_bp.route("/recommendations")
+def recommendations():
+    return render_template("recommendations.html")
 
 @main_bp.route("/forum")
 def forum():
