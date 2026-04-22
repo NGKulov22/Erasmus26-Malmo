@@ -1,47 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Flask App{% endblock %}</title>
-    <style>
-        nav {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
+<link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+<nav class="navbar">
+    <div class="logo-section">
+        <div class="logo-circle">M</div>
+        <span class="logo-text">Malmö Connect</span>
+    </div>
 
-        .auth-links {
-            margin-left: auto;
-            display: flex;
-            gap: 8px;
-        }
+    <div class="nav-links">
+        <a href="{{ url_for('main_bp.home') }}"
+           class="nav-item {% if request.endpoint == 'main_bp.home' %}active{% endif %}">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
 
-        .auth-button {
-            border: 1px solid #333;
-            border-radius: 6px;
-            padding: 6px 12px;
-            text-decoration: none;
-            color: #111;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="{{ url_for('main.home') }}">Home</a>
-            <a href="{{ url_for('main.about') }}">About</a>
-            <a href="{{ url_for('main.contact') }}">Contact</a>
-            <div class="auth-links">
-                <a class="auth-button" href="{{ url_for('auth.login') }}">Login</a>
-                <a class="auth-button" href="{{ url_for('auth.register') }}">Register</a>
-            </div>
-        </nav>
-        <hr />
-    </header>
+        <a href="{{ url_for('main_bp.places') }}"
+           class="nav-item {% if request.endpoint == 'main_bp.places' %}active{% endif %}">
+            <i class="fa-regular fa-map"></i>
+            <span>Places</span>
+        </a>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-</body>
-</html>
+        <a href="{{ url_for('main_bp.forum') }}"
+           class="nav-item {% if request.endpoint == 'main_bp.forum' %}active{% endif %}">
+            <i class="fa-regular fa-message"></i>
+            <span>Forum</span>
+        </a>
+
+        <a href="{{ url_for('main_bp.events') }}"
+           class="nav-item {% if request.endpoint == 'main_bp.events' %}active{% endif %}">
+            <i class="fa-regular fa-calendar"></i>
+            <span>Events</span>
+        </a>
+
+        <a href="{{ url_for('main_bp.saved') }}"
+           class="nav-item {% if request.endpoint == 'main_bp.saved' %}active{% endif %}">
+            <i class="fa-regular fa-bookmark"></i>
+            <span>Saved</span>
+        </a>
+
+        <a href="{{ url_for('auth_bp.profile') }}"
+           class="nav-item {% if request.endpoint == 'auth_bp.profile' %}active{% endif %}">
+            <i class="fa-regular fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </div>
+</nav>
