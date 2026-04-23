@@ -19,6 +19,7 @@
     line-height: 1;
     margin-bottom: 10px;
     background: linear-gradient(90deg, #9edfd5, #ef948c);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -86,6 +87,16 @@
     color: #97a1b2;
 }
 
+.search-submit {
+    border: none;
+    border-radius: 14px;
+    padding: 9px 14px;
+    background: linear-gradient(90deg, #9edfd5, #ef948c);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
 /* FILTER BOX */
 .forum-filters {
     background: #fff;
@@ -119,6 +130,9 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.22s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
 }
 
 .filter-tag:hover {
@@ -159,6 +173,7 @@
     align-items: center;
     gap: 7px;
     transition: all 0.22s ease;
+    text-decoration: none;
 }
 
 .sort-btn:hover {
@@ -259,6 +274,25 @@
     transform: scale(1.06);
 }
 
+.author-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #9edfd5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #132b4c;
+    font-size: 1.1rem;
+    font-weight: 800;
+    background: #e8f5f2;
+    transition: transform 0.22s ease;
+}
+
+.forum-card:hover .author-avatar {
+    transform: scale(1.06);
+}
+
 .meta-text {
     display: flex;
     align-items: center;
@@ -345,6 +379,11 @@
 
 .forum-footer i {
     font-size: 1rem;
+}
+
+.forum-empty {
+    justify-content: center;
+    text-align: center;
 }
 
 /* RESPONSIVE */

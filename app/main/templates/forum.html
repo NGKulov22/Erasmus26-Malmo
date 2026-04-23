@@ -1,16 +1,17 @@
 {% extends "base.html" %}
 
+{% block title %}Forum | Malmo Connect{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='forum.css') }}">
 {% endblock %}
 
 {% block content %}
 <div class="forum-page">
-
     <section class="forum-hero">
         <div>
             <h1>Community Forum</h1>
-            <p>Ask questions, share experiences, connect with others</p>
+            <p>Ask questions, share experiences, connect with others.</p>
         </div>
 
         <a href="#" class="new-post-btn">
@@ -19,190 +20,98 @@
         </a>
     </section>
 
-    <div class="search-bar">
+    <form class="search-bar" method="get" action="{{ url_for('main_bp.forum') }}">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" placeholder="Search discussions...">
-    </div>
+        <input type="text" name="q" value="{{ query }}" placeholder="Search discussions...">
+        <input type="hidden" name="category" value="{{ selected_category }}">
+        <input type="hidden" name="sort" value="{{ selected_sort }}">
+        <button class="search-submit" type="submit">Search</button>
+    </form>
 
     <section class="forum-filters">
         <div class="filter-group">
             <h3>Category</h3>
 
             <div class="filter-tags">
-                <button class="filter-tag active">All</button>
-                <button class="filter-tag">Living</button>
-                <button class="filter-tag">Education</button>
-                <button class="filter-tag">Social</button>
-                <button class="filter-tag">Jobs</button>
-                <button class="filter-tag">Housing</button>
-                <button class="filter-tag">Travel</button>
+                {% for category in categories %}
+                    <a
+                        class="filter-tag {% if selected_category == category %}active{% endif %}"
+                        href="{{ url_for('main_bp.forum', q=query, category=category, sort=selected_sort) }}"
+                    >
+                        {{ 'All' if category == 'all' else category|title }}
+                    </a>
+                {% endfor %}
             </div>
         </div>
 
         <div class="sort-row">
             <span>Sort by:</span>
 
-            <button class="sort-btn active">
+            <a
+                class="sort-btn {% if selected_sort == 'hot' %}active{% endif %}"
+                href="{{ url_for('main_bp.forum', q=query, category=selected_category, sort='hot') }}"
+            >
                 <i class="fa-solid fa-arrow-trend-up"></i>
                 Hot
-            </button>
+            </a>
 
-            <button class="sort-btn">
+            <a
+                class="sort-btn {% if selected_sort == 'new' %}active{% endif %}"
+                href="{{ url_for('main_bp.forum', q=query, category=selected_category, sort='new') }}"
+            >
                 <i class="fa-regular fa-clock"></i>
                 New
-            </button>
+            </a>
 
-            <button class="sort-btn">Top</button>
+            <a
+                class="sort-btn {% if selected_sort == 'top' %}active{% endif %}"
+                href="{{ url_for('main_bp.forum', q=query, category=selected_category, sort='top') }}"
+            >
+                Top
+            </a>
         </div>
     </section>
 
     <section class="forum-list">
+        {% for post in posts %}
+            <article class="forum-card">
+                <div class="vote-box">
+                    <button class="vote-btn" type="button" aria-label="Replies">
+                        <i class="fa-regular fa-message"></i>
+                    </button>
+                    <span>{{ post.replies }}</span>
+                </div>
 
-        <article class="forum-card">
-            <div class="vote-box">
-                <button class="vote-btn">
-                    <i class="fa-regular fa-thumbs-up"></i>
-                </button>
-                <span>45</span>
-            </div>
+                <div class="forum-content">
+                    <div class="forum-meta">
+                        <div class="author-avatar">{{ post.author[0] }}</div>
+                        <div class="meta-text">
+                            <span class="author">{{ post.author }}</span>
+                            <span class="dot">•</span>
+                            <span>{{ post.time_ago }}</span>
+                            <span class="category-pill {% if post.category|lower == 'education' %}blue{% endif %}">
+                                {{ post.category }}
+                            </span>
+                        </div>
+                    </div>
 
-            <div class="forum-content">
-                <div class="forum-meta">
-                    <img src="{{ url_for('static', filename='images/user1.jpg') }}" alt="Maria">
-                    <div class="meta-text">
-                        <span class="author">Maria K.</span>
-                        <span class="dot">•</span>
-                        <span>2h ago</span>
-                        <span class="category-pill">Living</span>
+                    <h2 class="forum-title">{{ post.title }}</h2>
+
+                    <p class="forum-description">{{ post.content }}</p>
+
+                    <div class="forum-footer">
+                        <span><i class="fa-regular fa-message"></i> {{ post.replies }} replies</span>
                     </div>
                 </div>
-
-                <h2 class="forum-title">
-                    Best grocery stores for international students?
-                </h2>
-
-                <p class="forum-description">
-                    Just moved here and wondering where locals shop for affordable groceries.
-                    Any recommendations?
-                </p>
-
-                <div class="tag-list">
-                    <span>#groceries</span>
-                    <span>#budget</span>
-                    <span>#shopping</span>
+            </article>
+        {% else %}
+            <article class="forum-card forum-empty">
+                <div class="forum-content">
+                    <h2 class="forum-title">No posts found</h2>
+                    <p class="forum-description">Try changing search text, category, or sort.</p>
                 </div>
-
-                <div class="forum-footer">
-                    <span><i class="fa-regular fa-message"></i> 23 replies</span>
-                </div>
-            </div>
-        </article>
-
-        <article class="forum-card">
-            <div class="vote-box">
-                <button class="vote-btn">
-                    <i class="fa-regular fa-thumbs-up"></i>
-                </button>
-                <span>31</span>
-            </div>
-
-            <div class="forum-content">
-                <div class="forum-meta">
-                    <img src="{{ url_for('static', filename='images/user2.jpg') }}" alt="Ahmed">
-                    <div class="meta-text">
-                        <span class="author">Ahmed S.</span>
-                        <span class="dot">•</span>
-                        <span>5h ago</span>
-                        <span class="category-pill blue">Education</span>
-                    </div>
-                </div>
-
-                <h2 class="forum-title">
-                    Anyone want to start a study group for Swedish?
-                </h2>
-
-                <p class="forum-description">
-                    Looking to practice Swedish conversation in a relaxed setting.
-                    Thinking weekly meetups at a café!
-                </p>
-
-                <div class="tag-list">
-                    <span>#language</span>
-                    <span>#study group</span>
-                    <span>#swedish</span>
-                </div>
-
-                <div class="forum-footer">
-                    <span><i class="fa-regular fa-message"></i> 12 replies</span>
-                </div>
-            </div>
-        </article>
-
-        <article class="forum-card">
-            <div class="vote-box">
-                <button class="vote-btn">
-                    <i class="fa-regular fa-thumbs-up"></i>
-                </button>
-                <span>67</span>
-            </div>
-
-            <div class="forum-content">
-                <div class="forum-meta">
-                    <img src="{{ url_for('static', filename='images/user3.jpg') }}" alt="Sophie">
-                    <div class="meta-text">
-                        <span class="author">Sophie T.</span>
-                        <span class="dot">•</span>
-                        <span>1d ago</span>
-                        <span class="category-pill">Housing</span>
-                    </div>
-                </div>
-
-                <h2 class="forum-title">
-                    Part-time jobs for English speakers in Malmö?
-                </h2>
-
-                <p class="forum-description">
-                    Looking for student-friendly jobs where Swedish isn't required.
-                    Any cafés or stores hiring?
-                </p>
-
-                <div class="tag-list">
-                    <span>#jobs</span>
-                    <span>#students</span>
-                    <span>#work</span>
-                </div>
-
-                <div class="forum-footer">
-                    <span><i class="fa-regular fa-message"></i> 41 replies</span>
-                </div>
-            </div>
-        </article>
-
+            </article>
+        {% endfor %}
     </section>
 </div>
-    <script>
-document.addEventListener("DOMContentLoaded", () => {
-
-    // Category buttons
-    const categoryButtons = document.querySelectorAll(".filter-tag");
-
-    categoryButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            categoryButtons.forEach(btn => btn.classList.remove("active"));
-            button.classList.add("active");
-        });
-    });
-
-    // Sort buttons
-    const sortButtons = document.querySelectorAll(".sort-btn");
-
-    sortButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            sortButtons.forEach(btn => btn.classList.remove("active"));
-            button.classList.add("active");
-        });
-    });
-
-});
-</script>
 {% endblock %}

@@ -2,9 +2,11 @@
 
 {% block title %}Register | Malmo Connect{% endblock %}
 
-{% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='places.css') }}">
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='pages.css') }}">
+{% endblock %}
 
+{% block content %}
 <section class="page-wrap">
     <div class="page-card" style="max-width: 700px; margin: 0 auto;">
         <div class="page-head">

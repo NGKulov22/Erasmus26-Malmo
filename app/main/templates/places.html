@@ -1,315 +1,118 @@
 {% extends "base.html" %}
 
+{% block title %}Places | Malmo Connect{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='places.css') }}">
 {% endblock %}
+
 {% block content %}
-
 <div class="places-page">
-
-    <!-- HERO -->
     <section class="places-hero">
         <h1>Discover Places</h1>
-        <p>Explore the best spots in Malmö curated for students and newcomers</p>
+        <p>Explore the best spots in Malmo curated for students and newcomers.</p>
     </section>
 
-    <!-- FILTERS -->
     <section class="filter-box">
         <div class="filter-title">
             <i class="fa-solid fa-filter"></i>
             <h2>Filters</h2>
         </div>
 
+        <form class="places-search-form" method="get" action="{{ url_for('main_bp.places') }}">
+            <input
+                class="search-input"
+                type="text"
+                name="q"
+                placeholder="Search by name, location, or tag"
+                value="{{ query }}"
+            >
+            <input type="hidden" name="category" value="{{ selected_category }}">
+            <button class="search-btn" type="submit">Search</button>
+            {% if query or selected_category != 'all' %}
+                <a class="clear-btn" href="{{ url_for('main_bp.places') }}">Clear</a>
+            {% endif %}
+        </form>
+
         <div class="filter-group">
             <h3>Category</h3>
             <div class="filter-tags">
-                <button class="filter-tag active">All</button>
-                <button class="filter-tag">Cafés</button>
-                <button class="filter-tag">Restaurants</button>
-                <button class="filter-tag">Bars</button>
-                <button class="filter-tag">Outdoor</button>
-                <button class="filter-tag">Study</button>
-                <button class="filter-tag">Culture</button>
-            </div>
-        </div>
-
-        <div class="filter-group">
-            <h3>Neighborhood</h3>
-            <div class="filter-tags">
-                <button class="filter-tag active secondary">All</button>
-                <button class="filter-tag secondary">Centrum</button>
-                <button class="filter-tag secondary">Västra Hamnen</button>
-                <button class="filter-tag secondary">Möllevången</button>
-                <button class="filter-tag secondary">Gamla Väster</button>
-                <button class="filter-tag secondary">Limhamn</button>
-            </div>
-        </div>
-
-        <div class="filter-group">
-            <h3>Price Range</h3>
-            <div class="filter-tags">
-                <button class="filter-tag gold active">$</button>
-                <button class="filter-tag gold">$$</button>
-                <button class="filter-tag gold">$$$</button>
+                {% for category in categories %}
+                    <a
+                        class="filter-tag {% if selected_category == category %}active{% endif %}"
+                        href="{{ url_for('main_bp.places', q=query, category=category) }}"
+                    >
+                        {{ 'All' if category == 'all' else category|title }}
+                    </a>
+                {% endfor %}
             </div>
         </div>
     </section>
 
-<p class="places-count">
-    <span id="places-count-number">8</span> places found
-</p>
+    <p class="places-count">
+        <span id="places-count-number">{{ places|length }}</span> places found
+    </p>
 
-    <!-- PLACES GRID -->
-    <section class="places-grid">
+    {% if places %}
+        <section class="places-grid">
+            {% for place in places %}
+                <article class="place-card">
+                    <div class="place-image">
+                        <img src="{{ place.image_url }}" alt="{{ place.name }}">
 
-        <div class="place-card">
-            <div class="place-image">
-                <img src="{{ url_for('static', filename='images/cafe.jpg') }}" alt="Lilla Kafferosteriet">
-                <button class="save-btn">
-                    <i class="fa-regular fa-bookmark"></i>
-                </button>
+                        {% if is_logged_in %}
+                            <form method="post" action="{{ url_for('main_bp.toggle_place_save', place_id=place.id) }}">
+                                <button
+                                    class="save-btn {% if place.id in saved_ids %}saved{% endif %}"
+                                    type="submit"
+                                    aria-label="{% if place.id in saved_ids %}Remove from saved{% else %}Save place{% endif %}"
+                                >
+                                    <i class="fa-{% if place.id in saved_ids %}solid{% else %}regular{% endif %} fa-bookmark"></i>
+                                </button>
+                            </form>
+                        {% else %}
+                            <a
+                                class="save-btn"
+                                href="{{ url_for('auth_bp.login', next=request.full_path) }}"
+                                aria-label="Log in to save"
+                            >
+                                <i class="fa-regular fa-bookmark"></i>
+                            </a>
+                        {% endif %}
 
-                <div class="rating-pill">
-                    <i class="fa-solid fa-star"></i>
-                    <span>4.8</span>
-                    <small>(245)</small>
-                </div>
-            </div>
+                        <div class="rating-pill">
+                            <i class="fa-solid fa-star"></i>
+                            <span>{{ place.rating }}</span>
+                        </div>
+                    </div>
 
-            <div class="place-content">
-                <div class="place-header">
-                    <h3>Lilla Kafferosteriet</h3>
-                    <span class="price">$$</span>
-                </div>
+                    <div class="place-content">
+                        <div class="place-header">
+                            <h3>{{ place.name }}</h3>
+                            <span class="price">{{ place.price_label }}</span>
+                        </div>
 
-                <p class="place-location">
-                    <i class="fa-solid fa-location-dot"></i>
-                    Gamla Väster
-                </p>
+                        <p class="place-location">
+                            <i class="fa-solid fa-location-dot"></i>
+                            {{ place.location }}
+                        </p>
 
-                <p class="place-description">
-                    Charming local coffee roastery with excellent espresso and pastries.
-                </p>
+                        <p class="place-description">{{ place.description }}</p>
 
-                <div class="place-tags">
-                    <span>Cozy</span>
-                    <span>WiFi</span>
-                    <span>Student Discount</span>
-                </div>
-            </div>
+                        <div class="place-tags">
+                            {% for tag in place.tags %}
+                                <span>{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+    {% else %}
+        <div class="place-empty">
+            <p>No places match your current filters.</p>
+            <p><a href="{{ url_for('main_bp.places') }}">Show all places</a></p>
         </div>
-            <div class="place-card">
-    <div class="place-image">
-        <img src="{{ url_for('static', filename='images/library.jpg') }}" alt="Malmö Stadsbibliotek">
-        <button class="save-btn">
-            <i class="fa-regular fa-bookmark"></i>
-        </button>
-
-        <div class="rating-pill">
-            <i class="fa-solid fa-star"></i>
-            <span>4.9</span>
-            <small>(421)</small>
-        </div>
-    </div>
-
-    <div class="place-content">
-        <div class="place-header">
-            <h3>Malmö Stadsbibliotek</h3>
-            <span class="price">$</span>
-        </div>
-
-        <p class="place-location">
-            <i class="fa-solid fa-location-dot"></i>
-            Centrum
-        </p>
-
-        <p class="place-description">
-            Modern city library with excellent study facilities and reading rooms.
-        </p>
-
-        <div class="place-tags">
-            <span>Quiet</span>
-            <span>WiFi</span>
-            <span>Free</span>
-        </div>
-    </div>
+    {% endif %}
 </div>
-
-<div class="place-card">
-    <div class="place-image">
-        <img src="{{ url_for('static', filename='images/bar.jpg') }}" alt="Möllan Bar">
-        <button class="save-btn">
-            <i class="fa-regular fa-bookmark"></i>
-        </button>
-
-        <div class="rating-pill">
-            <i class="fa-solid fa-star"></i>
-            <span>4.6</span>
-            <small>(298)</small>
-        </div>
-    </div>
-
-    <div class="place-content">
-        <div class="place-header">
-            <h3>Möllan Bar</h3>
-            <span class="price">$$</span>
-        </div>
-
-        <p class="place-location">
-            <i class="fa-solid fa-location-dot"></i>
-            Möllevången
-        </p>
-
-        <p class="place-description">
-            Casual neighborhood bar with live music and friendly atmosphere.
-        </p>
-
-        <div class="place-tags">
-            <span>Live Music</span>
-            <span>Social</span>
-            <span>Local</span>
-        </div>
-    </div>
-</div>
-
-<div class="place-card">
-    <div class="place-image">
-        <img src="{{ url_for('static', filename='images/falafel.jpg') }}" alt="Falafel No. 1">
-        <button class="save-btn">
-            <i class="fa-regular fa-bookmark"></i>
-        </button>
-
-        <div class="rating-pill">
-            <i class="fa-solid fa-star"></i>
-            <span>4.8</span>
-            <small>(678)</small>
-        </div>
-    </div>
-
-    <div class="place-content">
-        <div class="place-header">
-            <h3>Falafel No. 1</h3>
-            <span class="price">$</span>
-        </div>
-
-        <p class="place-location">
-            <i class="fa-solid fa-location-dot"></i>
-            Möllevången
-        </p>
-
-        <p class="place-description">
-            Legendary falafel spot loved by students and locals alike.
-        </p>
-
-        <div class="place-tags">
-            <span>Fast Food</span>
-            <span>Budget</span>
-            <span>Authentic</span>
-        </div>
-    </div>
-</div>
-        <div class="place-card">
-            <div class="place-image">
-                <img src="{{ url_for('static', filename='images/beach.jpg') }}" alt="Västra Hamnen Beach">
-                <button class="save-btn">
-                    <i class="fa-regular fa-bookmark"></i>
-                </button>
-
-                <div class="rating-pill">
-                    <i class="fa-solid fa-star"></i>
-                    <span>4.9</span>
-                    <small>(532)</small>
-                </div>
-            </div>
-
-            <div class="place-content">
-                <div class="place-header">
-                    <h3>Västra Hamnen Beach</h3>
-                    <span class="price">$</span>
-                </div>
-
-                <p class="place-location">
-                    <i class="fa-solid fa-location-dot"></i>
-                    Västra Hamnen
-                </p>
-
-                <p class="place-description">
-                    Beautiful waterfront area perfect for sunset walks and swimming.
-                </p>
-
-                <div class="place-tags">
-                    <span>Nature</span>
-                    <span>Sunset</span>
-                    <span>Free</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="place-card">
-            <div class="place-image">
-                <img src="{{ url_for('static', filename='images/foodhall.jpg') }}" alt="Malmö Saluhall">
-                <button class="save-btn">
-                    <i class="fa-regular fa-bookmark"></i>
-                </button>
-
-                <div class="rating-pill">
-                    <i class="fa-solid fa-star"></i>
-                    <span>4.7</span>
-                    <small>(389)</small>
-                </div>
-            </div>
-
-            <div class="place-content">
-                <div class="place-header">
-                    <h3>Malmö Saluhall</h3>
-                    <span class="price">$$$</span>
-                </div>
-
-                <p class="place-location">
-                    <i class="fa-solid fa-location-dot"></i>
-                    Centrum
-                </p>
-
-                <p class="place-description">
-                    Indoor food market with diverse cuisines and fresh produce.
-                </p>
-
-                <div class="place-tags">
-                    <span>Food Market</span>
-                    <span>Variety</span>
-                    <span>Lunch</span>
-                </div>
-            </div>
-        </div>
-
-    </section>
-</div>
-    <script>
-    const filterButtons = document.querySelectorAll('.filter-tag');
-    const placeCards = document.querySelectorAll('.place-card');
-    const countElement = document.getElementById('places-count-number');
-
-    function updateCount() {
-        const visibleCards = [...placeCards].filter(card => {
-            return card.style.display !== 'none';
-        });
-
-        countElement.textContent = visibleCards.length;
-    }
-
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            button.parentElement.querySelectorAll('.filter-tag').forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            button.classList.add('active');
-
-            /* Later you can add your filtering logic here */
-            updateCount();
-        });
-    });
-
-    updateCount();
-</script>
 {% endblock %}

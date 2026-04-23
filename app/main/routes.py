@@ -2,6 +2,7 @@ from flask import flash, g, redirect, render_template, request, url_for
 
 from app.services.content_service import (
     get_events,
+    get_forum_categories,
     get_forum_posts,
     get_place_by_id,
     get_place_categories,
@@ -28,7 +29,18 @@ def recommendations():
 
 @main_bp.route("/forum")
 def forum():
-    return render_template("forum.html", posts=get_forum_posts())
+    query = request.args.get("q", "").strip()
+    category = (request.args.get("category", "all") or "all").strip().lower()
+    sort = (request.args.get("sort", "hot") or "hot").strip().lower()
+
+    return render_template(
+        "forum.html",
+        posts=get_forum_posts(search=query, category=category, sort=sort),
+        categories=get_forum_categories(),
+        selected_category=category,
+        selected_sort=sort,
+        query=query,
+    )
 
 
 @main_bp.route("/events")
@@ -38,8 +50,8 @@ def events():
 
 @main_bp.route("/places")
 def places():
-    query = request.args.get("q", "")
-    category = request.args.get("category", "all")
+    query = request.args.get("q", "").strip()
+    category = (request.args.get("category", "all") or "all").strip().lower()
 
     places_list = get_places(search=query, category=category)
     saved_ids = set(g.current_user["saved_place_ids"]) if g.current_user else set()
