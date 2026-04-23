@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta, timezone
+from urllib.parse import urlsplit, urlunsplit
 
 from flask import current_app, g
-from psycopg import Connection, connect
+from psycopg import Connection, OperationalError, connect, sql
 from psycopg.rows import dict_row
 
 from app.data.content import FORUM_POSTS
@@ -52,9 +53,48 @@ def _seed_forum_posts(connection: Connection) -> None:
         )
 
 
+def _is_missing_database_error(error: OperationalError) -> bool:
+    message = str(error).lower()
+    return "database" in message and "does not exist" in message
+
+
+def _split_database_url(database_url: str) -> tuple[str, str]:
+    parts = urlsplit(database_url)
+    db_name = parts.path.lstrip("/")
+    if not db_name:
+        raise RuntimeError("DATABASE_URL must include a database name.")
+
+    admin_parts = parts._replace(path="/postgres")
+    return urlunsplit(admin_parts), db_name
+
+
+def _ensure_database_exists(database_url: str) -> None:
+    admin_url, db_name = _split_database_url(database_url)
+
+    with connect(admin_url, row_factory=dict_row, autocommit=True) as admin_connection:
+        existing = admin_connection.execute(
+            "SELECT 1 FROM pg_database WHERE datname = %s",
+            (db_name,),
+        ).fetchone()
+
+        if existing is None:
+            admin_connection.execute(
+                sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name))
+            )
+
+
 def get_db() -> Connection:
     if "db" not in g:
-        g.db = connect(current_app.config["DATABASE_URL"], row_factory=dict_row)
+        database_url = current_app.config["DATABASE_URL"]
+
+        try:
+            g.db = connect(database_url, row_factory=dict_row)
+        except OperationalError as connection_error:
+            if not _is_missing_database_error(connection_error):
+                raise
+
+            _ensure_database_exists(database_url)
+            g.db = connect(database_url, row_factory=dict_row)
 
     return g.db
 
