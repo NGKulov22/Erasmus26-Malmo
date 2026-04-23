@@ -23,7 +23,7 @@ def _parse_csv(value: str) -> list[str]:
 
 def _get_saved_place_ids(user_id: int) -> list[int]:
     rows = get_db().execute(
-        "SELECT place_id FROM user_saved_places WHERE user_id = ? ORDER BY place_id",
+        "SELECT place_id FROM user_saved_places WHERE user_id = %s ORDER BY place_id",
         (user_id,),
     ).fetchall()
     return [int(row["place_id"]) for row in rows]
@@ -50,14 +50,14 @@ def get_user_by_id(user_id: int | None) -> dict | None:
         return None
 
     row = get_db().execute(
-        "SELECT id, full_name, email, interests, created_at FROM users WHERE id = ?",
+        "SELECT id, full_name, email, interests, created_at FROM users WHERE id = %s",
         (user_id,),
     ).fetchone()
     return _row_to_user(row)
 
 
 def get_user_by_email(email: str):
-    return get_db().execute("SELECT * FROM users WHERE email = ?", (_normalize_email(email),)).fetchone()
+    return get_db().execute("SELECT * FROM users WHERE email = %s", (_normalize_email(email),)).fetchone()
 
 
 def register_user(full_name: str, email: str, password: str, interests_raw: str) -> tuple[dict | None, str | None]:
@@ -76,13 +76,13 @@ def register_user(full_name: str, email: str, password: str, interests_raw: str)
 
     connection = get_db()
     connection.execute(
-        "INSERT INTO users (full_name, email, password_hash, interests) VALUES (?, ?, ?, ?)",
+        "INSERT INTO users (full_name, email, password_hash, interests) VALUES (%s, %s, %s, %s)",
         (clean_name, clean_email, generate_password_hash(password), _to_csv(clean_interests)),
     )
     connection.commit()
 
     new_row = connection.execute(
-        "SELECT id, full_name, email, interests, created_at FROM users WHERE email = ?",
+        "SELECT id, full_name, email, interests, created_at FROM users WHERE email = %s",
         (clean_email,),
     ).fetchone()
 
@@ -106,20 +106,20 @@ def toggle_saved_place(user_id: int, place_id: int) -> bool:
 
     connection = get_db()
     existing = connection.execute(
-        "SELECT 1 FROM user_saved_places WHERE user_id = ? AND place_id = ?",
+        "SELECT 1 FROM user_saved_places WHERE user_id = %s AND place_id = %s",
         (user_id, place_id),
     ).fetchone()
 
     if existing:
         connection.execute(
-            "DELETE FROM user_saved_places WHERE user_id = ? AND place_id = ?",
+            "DELETE FROM user_saved_places WHERE user_id = %s AND place_id = %s",
             (user_id, place_id),
         )
         connection.commit()
         return False
 
     connection.execute(
-        "INSERT INTO user_saved_places (user_id, place_id) VALUES (?, ?)",
+        "INSERT INTO user_saved_places (user_id, place_id) VALUES (%s, %s)",
         (user_id, place_id),
     )
     connection.commit()

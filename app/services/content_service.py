@@ -66,22 +66,29 @@ def _time_ago_to_hours(value: str) -> int:
     return 10**9
 
 
-def _parse_datetime(value: str) -> datetime:
+def _parse_datetime(value: datetime | str | None) -> datetime:
+    if isinstance(value, datetime):
+        return value
+
     normalized = (value or "").strip().replace(" ", "T")
+    if not normalized:
+        return datetime.now(timezone.utc)
+
     try:
-        return datetime.fromisoformat(normalized)
+        parsed = datetime.fromisoformat(normalized)
+        return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=timezone.utc)
     except ValueError:
-        return datetime.now()
+        return datetime.now(timezone.utc)
 
 
-def _hours_since(timestamp: str) -> float:
+def _hours_since(timestamp: datetime | str | None) -> float:
     created_at = _parse_datetime(timestamp)
-    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    now = datetime.now(timezone.utc)
     delta = now - created_at
     return max(delta.total_seconds() / 3600.0, 0.0)
 
 
-def _time_ago_from_timestamp(timestamp: str) -> str:
+def _time_ago_from_timestamp(timestamp: datetime | str | None) -> str:
     seconds = int(_hours_since(timestamp) * 3600)
     if seconds < 60:
         return "just now"
@@ -106,7 +113,7 @@ def _reply_rows_by_post_ids(post_ids: list[int]) -> dict[int, list[dict]]:
     if not post_ids:
         return {}
 
-    placeholders = ",".join("?" for _ in post_ids)
+    placeholders = ",".join("%s" for _ in post_ids)
     rows = get_db().execute(
         f"""
         SELECT post_id, author_name, content, created_at
@@ -114,7 +121,7 @@ def _reply_rows_by_post_ids(post_ids: list[int]) -> dict[int, list[dict]]:
         WHERE post_id IN ({placeholders})
         ORDER BY created_at ASC
         """,
-        post_ids,
+        tuple(post_ids),
     ).fetchall()
 
     grouped: dict[int, list[dict]] = defaultdict(list)
@@ -226,7 +233,7 @@ def create_forum_post(user_id: int, author_name: str, title: str, category: str,
     connection.execute(
         """
         INSERT INTO forum_posts (user_id, author_name, category, title, content)
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s)
         """,
         (user_id, author_name, clean_category, clean_title, clean_content),
     )
@@ -242,14 +249,14 @@ def create_forum_reply(user_id: int, post_id: int, author_name: str, content: st
         return "Reply is too long (max 280 characters)."
 
     connection = get_db()
-    exists = connection.execute("SELECT 1 FROM forum_posts WHERE id = ?", (post_id,)).fetchone()
+    exists = connection.execute("SELECT 1 FROM forum_posts WHERE id = %s", (post_id,)).fetchone()
     if exists is None:
         return "Post not found."
 
     connection.execute(
         """
         INSERT INTO forum_replies (post_id, user_id, author_name, content)
-        VALUES (?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s)
         """,
         (post_id, user_id, author_name, clean_content),
     )

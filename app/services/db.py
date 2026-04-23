@@ -1,102 +1,60 @@
-import sqlite3
-from pathlib import Path
+from datetime import datetime, timedelta, timezone
 
 from flask import current_app, g
+from psycopg import Connection, connect
+from psycopg.rows import dict_row
 
 from app.data.content import FORUM_POSTS
 
 
-def _parse_legacy_int_csv(value: str) -> list[int]:
-    if not value:
-        return []
-
-    ids: list[int] = []
-    for raw_item in value.split(","):
-        item = raw_item.strip()
-        if item.isdigit():
-            ids.append(int(item))
-    return ids
-
-
-def _migrate_legacy_saved_places(connection: sqlite3.Connection) -> None:
-    columns = {row["name"] for row in connection.execute("PRAGMA table_info(users)").fetchall()}
-    if "saved_place_ids" not in columns:
-        return
-
-    rows = connection.execute(
-        "SELECT id, saved_place_ids FROM users WHERE saved_place_ids IS NOT NULL AND saved_place_ids != ''"
-    ).fetchall()
-
-    for row in rows:
-        for place_id in _parse_legacy_int_csv(row["saved_place_ids"]):
-            connection.execute(
-                "INSERT OR IGNORE INTO user_saved_places (user_id, place_id) VALUES (?, ?)",
-                (row["id"], place_id),
-            )
-
-    connection.execute("UPDATE users SET saved_place_ids = '' WHERE saved_place_ids IS NOT NULL AND saved_place_ids != ''")
-
-    # Best-effort cleanup for modern SQLite versions.
-    try:
-        connection.execute("ALTER TABLE users DROP COLUMN saved_place_ids")
-    except sqlite3.OperationalError:
-        # Some SQLite builds do not support DROP COLUMN.
-        pass
-
-
-def _time_ago_to_sqlite_modifier(value: str) -> str:
+def _time_ago_to_delta(value: str) -> timedelta:
     raw = (value or "").strip().lower()
     if not raw:
-        return "-1 day"
+        return timedelta(days=1)
 
     token = raw.split()[0]
     if len(token) < 2 or not token[:-1].isdigit():
-        return "-1 day"
+        return timedelta(days=1)
 
     amount = int(token[:-1])
     unit = token[-1]
 
     if unit == "h":
-        return f"-{amount} hours"
+        return timedelta(hours=amount)
     if unit == "d":
-        return f"-{amount} days"
+        return timedelta(days=amount)
     if unit == "w":
-        return f"-{amount * 7} days"
+        return timedelta(days=amount * 7)
 
-    return "-1 day"
+    return timedelta(days=1)
 
 
-def _seed_forum_posts(connection: sqlite3.Connection) -> None:
+def _seed_forum_posts(connection: Connection) -> None:
     existing = connection.execute("SELECT COUNT(*) AS total FROM forum_posts").fetchone()
     if existing and int(existing["total"]) > 0:
         return
 
+    now = datetime.now(timezone.utc)
     for post in FORUM_POSTS:
-        modifier = _time_ago_to_sqlite_modifier(post.get("time_ago", ""))
+        created_at = now - _time_ago_to_delta(post.get("time_ago", ""))
         connection.execute(
             """
             INSERT INTO forum_posts (author_name, category, title, content, created_at)
-            VALUES (?, ?, ?, ?, datetime('now', ?))
+            VALUES (%s, %s, %s, %s, %s)
             """,
             (
                 post.get("author", "Community member"),
                 post.get("category", "General"),
                 post.get("title", "Untitled post"),
                 post.get("content", ""),
-                modifier,
+                created_at,
             ),
         )
 
 
-def get_db() -> sqlite3.Connection:
+def get_db() -> Connection:
     if "db" not in g:
-        db_path = Path(current_app.config["DATABASE"])
-        db_path.parent.mkdir(parents=True, exist_ok=True)
-
-        connection = sqlite3.connect(str(db_path))
-        connection.row_factory = sqlite3.Row
-        connection.execute("PRAGMA foreign_keys = ON")
-        g.db = connection
+        g.db = connect(current_app.config["DATABASE_URL"], row_factory=dict_row)
 
     return g.db
 
@@ -112,21 +70,21 @@ def init_db() -> None:
     connection.execute(
         """
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id BIGSERIAL PRIMARY KEY,
             full_name TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
             password_hash TEXT NOT NULL,
             interests TEXT NOT NULL DEFAULT '',
-            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
         )
         """
     )
     connection.execute(
         """
         CREATE TABLE IF NOT EXISTS user_saved_places (
-            user_id INTEGER NOT NULL,
+            user_id BIGINT NOT NULL,
             place_id INTEGER NOT NULL,
-            saved_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            saved_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (user_id, place_id),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )
@@ -135,13 +93,13 @@ def init_db() -> None:
     connection.execute(
         """
         CREATE TABLE IF NOT EXISTS forum_posts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
+            id BIGSERIAL PRIMARY KEY,
+            user_id BIGINT,
             author_name TEXT NOT NULL,
             category TEXT NOT NULL,
             title TEXT NOT NULL,
             content TEXT NOT NULL,
-            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
         )
         """
@@ -149,12 +107,12 @@ def init_db() -> None:
     connection.execute(
         """
         CREATE TABLE IF NOT EXISTS forum_replies (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            post_id INTEGER NOT NULL,
-            user_id INTEGER,
+            id BIGSERIAL PRIMARY KEY,
+            post_id BIGINT NOT NULL,
+            user_id BIGINT,
             author_name TEXT NOT NULL,
             content TEXT NOT NULL,
-            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (post_id) REFERENCES forum_posts(id) ON DELETE CASCADE,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
         )
@@ -166,7 +124,6 @@ def init_db() -> None:
     connection.execute("CREATE INDEX IF NOT EXISTS idx_forum_posts_created_at ON forum_posts(created_at)")
     connection.execute("CREATE INDEX IF NOT EXISTS idx_forum_replies_post_id ON forum_replies(post_id)")
     connection.execute("CREATE INDEX IF NOT EXISTS idx_forum_replies_created_at ON forum_replies(created_at)")
-    _migrate_legacy_saved_places(connection)
     _seed_forum_posts(connection)
     connection.commit()
 
