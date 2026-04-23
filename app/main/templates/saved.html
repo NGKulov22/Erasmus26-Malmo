@@ -3,49 +3,141 @@
 {% block title %}Saved | Malmo Connect{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='pages.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='saved.css') }}">
 {% endblock %}
 
 {% block content %}
-<section class="page-wrap">
-    <div class="page-head">
-        <h1 class="page-title">Your Saved Places</h1>
-        <p class="page-subtitle">Saved place IDs are persisted in SQLite with your user profile.</p>
+
+<div class="container">
+
+    <h1 class="page-title">Saved Items</h1>
+    <p class="subtitle">Your bookmarked places, events, and discussions</p>
+
+    <!-- TABS -->
+    <div class="saved-tabs">
+        <button class="tab active" type="button" data-type="places">Places <span>3</span></button>
+        <button class="tab" type="button" data-type="events">Events <span>2</span></button>
+        <button class="tab" type="button" data-type="posts">Posts <span>3</span></button>
     </div>
 
-    {% if saved_places %}
-        <div class="simple-grid">
-            {% for place in saved_places %}
-                <article class="page-card">
-                    <img class="place-cover" src="{{ place.image_url }}" alt="{{ place.name }}">
-                    <h3>{{ place.name }}</h3>
-                    <p class="place-meta">{{ place.location }} • {{ place.price_label }}</p>
-                    <p>{{ place.description }}</p>
-                    <a href="{{ url_for('main_bp.places') }}" class="link-line">Manage in Places</a>
-                </article>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="page-card empty-state">
-            <p>You have no saved places yet.</p>
-            <p><a href="{{ url_for('main_bp.places') }}">Browse places</a> and save a few.</p>
-        </div>
-    {% endif %}
+    <!-- PLACES -->
+    <div class="saved-grid" id="places">
 
-    {% if suggested_places %}
-        <div class="page-head" style="margin-top: 24px;">
-            <h2 class="page-title" style="font-size: 1.6rem;">Suggestions by Interests</h2>
+        <!-- CARD -->
+        <div class="saved-card">
+            <div class="card-image">
+                <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb">
+                <div class="card-actions">
+                    <button class="delete-btn" type="button"><i class="fa-solid fa-trash"></i></button>
+                    <button class="link-btn" type="button"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="title-row">
+                    <h3>Lilla Kafferosteriet</h3>
+                    <span class="rating">⭐ 4.8</span>
+                </div>
+                <p class="location"><i class="fa-solid fa-location-dot"></i> Gamla Väster</p>
+                <div class="card-footer">
+                    <span>Saved 2 days ago</span>
+                    <span class="price">$$</span>
+                </div>
+            </div>
         </div>
 
-        <div class="simple-grid">
-            {% for place in suggested_places %}
-                <article class="page-card">
-                    <h3>{{ place.name }}</h3>
-                    <p class="place-meta">{{ place.location }}</p>
-                    <p>{{ place.description }}</p>
-                </article>
-            {% endfor %}
+        <!-- MORE CARDS... -->
+    </div>
+
+    <!-- EVENTS -->
+        <div class="saved-grid hidden" id="events">
+
+    <div class="saved-card">
+        <div class="card-image">
+            <img src="https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf">
+
+            <div class="card-actions">
+                <button class="delete-btn" type="button"><i class="fa-solid fa-trash"></i></button>
+                <button class="link-btn" type="button"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+            </div>
         </div>
-    {% endif %}
-</section>
+
+        <div class="card-content">
+            <div class="title-row">
+                <h3>Beach Volleyball Tournament</h3>
+                <span class="rating">⭐ 4.7</span>
+            </div>
+
+            <p class="location">
+                <i class="fa-solid fa-location-dot"></i> Västra Hamnen Beach
+            </p>
+
+            <div class="card-footer">
+                <span>Saved event</span>
+                <span class="price">Free</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <!-- POSTS -->
+    <div class="saved-grid hidden" id="posts">
+
+    <div class="saved-card">
+        <div class="card-image">
+            <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2">
+
+            <div class="card-actions">
+                <button class="delete-btn" type="button"><i class="fa-solid fa-trash"></i></button>
+                <button class="link-btn" type="button"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+            </div>
+        </div>
+
+        <div class="card-content">
+            <div class="title-row">
+                <h3>How to find housing in Malmö?</h3>
+                <span class="rating">💬</span>
+            </div>
+
+            <p class="location">
+                Student discussion thread
+            </p>
+
+            <div class="card-footer">
+                <span>Saved post</span>
+                <span class="price">Forum</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+const tabs = document.querySelectorAll('.tab');
+const sections = document.querySelectorAll('.saved-grid');
+
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+
+        // switch active tab
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // hide all sections
+        sections.forEach(sec => sec.classList.add('hidden'));
+
+        // show selected
+        const type = tab.getAttribute('data-type');
+        document.getElementById(type).classList.remove('hidden');
+    });
+});
+
+// DELETE CARD
+document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        btn.closest('.saved-card').remove();
+    });
+});
+</script>
+
 {% endblock %}
