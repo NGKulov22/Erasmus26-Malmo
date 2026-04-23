@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from app.data.content import EVENTS, FORUM_POSTS, PLACES
+from collections import defaultdict
+from datetime import datetime, timezone
+
+from app.data.content import EVENTS, PLACES
+from app.services.db import get_db
 
 
 def get_places(search: str = "", category: str = "all") -> list[dict]:
@@ -62,8 +66,73 @@ def _time_ago_to_hours(value: str) -> int:
     return 10**9
 
 
+def _parse_datetime(value: str) -> datetime:
+    normalized = (value or "").strip().replace(" ", "T")
+    try:
+        return datetime.fromisoformat(normalized)
+    except ValueError:
+        return datetime.now()
+
+
+def _hours_since(timestamp: str) -> float:
+    created_at = _parse_datetime(timestamp)
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    delta = now - created_at
+    return max(delta.total_seconds() / 3600.0, 0.0)
+
+
+def _time_ago_from_timestamp(timestamp: str) -> str:
+    seconds = int(_hours_since(timestamp) * 3600)
+    if seconds < 60:
+        return "just now"
+
+    minutes = seconds // 60
+    if minutes < 60:
+        return f"{minutes}m ago"
+
+    hours = minutes // 60
+    if hours < 24:
+        return f"{hours}h ago"
+
+    days = hours // 24
+    if days < 7:
+        return f"{days}d ago"
+
+    weeks = max(days // 7, 1)
+    return f"{weeks}w ago"
+
+
+def _reply_rows_by_post_ids(post_ids: list[int]) -> dict[int, list[dict]]:
+    if not post_ids:
+        return {}
+
+    placeholders = ",".join("?" for _ in post_ids)
+    rows = get_db().execute(
+        f"""
+        SELECT post_id, author_name, content, created_at
+        FROM forum_replies
+        WHERE post_id IN ({placeholders})
+        ORDER BY created_at ASC
+        """,
+        post_ids,
+    ).fetchall()
+
+    grouped: dict[int, list[dict]] = defaultdict(list)
+    for row in rows:
+        grouped[int(row["post_id"])].append(
+            {
+                "author": row["author_name"],
+                "content": row["content"],
+                "time_ago": _time_ago_from_timestamp(row["created_at"]),
+            }
+        )
+
+    return grouped
+
+
 def get_forum_categories() -> list[str]:
-    categories = sorted({post["category"].lower() for post in FORUM_POSTS})
+    rows = get_db().execute("SELECT DISTINCT category FROM forum_posts").fetchall()
+    categories = sorted({str(row["category"]).strip().lower() for row in rows if str(row["category"]).strip()})
     return ["all", *categories]
 
 
@@ -72,31 +141,120 @@ def get_forum_posts(search: str = "", category: str = "all", sort: str = "hot") 
     selected = category.strip().lower() or "all"
     selected_sort = sort.strip().lower() or "hot"
 
-    posts = FORUM_POSTS
-    if selected != "all":
-        posts = [post for post in posts if post["category"].lower() == selected]
+    rows = get_db().execute(
+        """
+        SELECT
+            p.id,
+            p.author_name,
+            p.category,
+            p.title,
+            p.content,
+            p.created_at,
+            COUNT(r.id) AS replies
+        FROM forum_posts AS p
+        LEFT JOIN forum_replies AS r ON r.post_id = p.id
+        GROUP BY p.id
+        """
+    ).fetchall()
 
-    if query:
-        posts = [
-            post
-            for post in posts
-            if query in post["title"].lower()
+    posts: list[dict] = []
+    for row in rows:
+        post = {
+            "id": int(row["id"]),
+            "author": row["author_name"],
+            "title": row["title"],
+            "content": row["content"],
+            "category": row["category"],
+            "replies": int(row["replies"] or 0),
+            "created_at": row["created_at"],
+        }
+
+        if selected != "all" and post["category"].strip().lower() != selected:
+            continue
+
+        if query and not (
+            query in post["title"].lower()
             or query in post["content"].lower()
             or query in post["author"].lower()
             or query in post["category"].lower()
-        ]
+        ):
+            continue
+
+        posts.append(post)
+
+    reply_map = _reply_rows_by_post_ids([post["id"] for post in posts])
+    for post in posts:
+        post["time_ago"] = _time_ago_from_timestamp(post["created_at"])
+        post["reply_items"] = reply_map.get(post["id"], [])
 
     if selected_sort == "new":
-        return sorted(posts, key=lambda post: _time_ago_to_hours(post.get("time_ago", "")))
+        return sorted(posts, key=lambda post: _parse_datetime(post["created_at"]), reverse=True)
 
     if selected_sort == "top":
-        return sorted(posts, key=lambda post: post.get("replies", 0), reverse=True)
+        return sorted(
+            posts,
+            key=lambda post: (post.get("replies", 0), _parse_datetime(post["created_at"])),
+            reverse=True,
+        )
 
     def hot_score(post: dict) -> float:
-        hours_old = _time_ago_to_hours(post.get("time_ago", ""))
+        hours_old = _hours_since(post.get("created_at", ""))
         return (post.get("replies", 0) * 2) - (min(hours_old, 72) * 0.2)
 
     return sorted(posts, key=hot_score, reverse=True)
+
+
+def create_forum_post(user_id: int, author_name: str, title: str, category: str, content: str) -> str | None:
+    clean_title = title.strip()
+    clean_category = category.strip()
+    clean_content = content.strip()
+
+    if not clean_title:
+        return "Post title is required."
+    if not clean_category:
+        return "Topic is required."
+    if not clean_content:
+        return "Post content is required."
+    if len(clean_title) > 120:
+        return "Title is too long (max 120 characters)."
+    if len(clean_category) > 40:
+        return "Topic is too long (max 40 characters)."
+    if len(clean_content) > 2000:
+        return "Post is too long (max 2000 characters)."
+
+    connection = get_db()
+    connection.execute(
+        """
+        INSERT INTO forum_posts (user_id, author_name, category, title, content)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        (user_id, author_name, clean_category, clean_title, clean_content),
+    )
+    connection.commit()
+    return None
+
+
+def create_forum_reply(user_id: int, post_id: int, author_name: str, content: str) -> str | None:
+    clean_content = content.strip()
+    if not clean_content:
+        return "Reply cannot be empty."
+    if len(clean_content) > 280:
+        return "Reply is too long (max 280 characters)."
+
+    connection = get_db()
+    exists = connection.execute("SELECT 1 FROM forum_posts WHERE id = ?", (post_id,)).fetchone()
+    if exists is None:
+        return "Post not found."
+
+    connection.execute(
+        """
+        INSERT INTO forum_replies (post_id, user_id, author_name, content)
+        VALUES (?, ?, ?, ?)
+        """,
+        (post_id, user_id, author_name, clean_content),
+    )
+    connection.commit()
+    return None
 
 
 def get_recommended_places(interests: list[str], limit: int = 6) -> list[dict]:

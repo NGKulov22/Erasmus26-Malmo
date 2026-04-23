@@ -1,6 +1,8 @@
 from flask import flash, g, redirect, render_template, request, url_for
 
 from app.services.content_service import (
+    create_forum_post,
+    create_forum_reply,
     get_events,
     get_forum_categories,
     get_forum_posts,
@@ -13,6 +15,13 @@ from app.services.content_service import (
 from app.services.user_service import toggle_saved_place
 from app.utils.auth import login_required
 from . import main_bp
+
+
+def _forum_redirect_target() -> str:
+    query = request.form.get("q", "").strip()
+    category = (request.form.get("category", "all") or "all").strip().lower()
+    sort = (request.form.get("sort", "hot") or "hot").strip().lower()
+    return url_for("main_bp.forum", q=query, category=category, sort=sort)
 
 
 @main_bp.route("/")
@@ -41,6 +50,43 @@ def forum():
         selected_sort=sort,
         query=query,
     )
+
+
+@main_bp.route("/forum/posts", methods=["POST"])
+@login_required
+def forum_create_post():
+    error = create_forum_post(
+        user_id=g.current_user["id"],
+        author_name=g.current_user["full_name"],
+        title=request.form.get("title", ""),
+        category=request.form.get("topic", ""),
+        content=request.form.get("content", ""),
+    )
+
+    if error:
+        flash(error, "error")
+    else:
+        flash("Post published.", "success")
+
+    return redirect(_forum_redirect_target())
+
+
+@main_bp.route("/forum/posts/<int:post_id>/replies", methods=["POST"])
+@login_required
+def forum_create_reply(post_id: int):
+    error = create_forum_reply(
+        user_id=g.current_user["id"],
+        post_id=post_id,
+        author_name=g.current_user["full_name"],
+        content=request.form.get("content", ""),
+    )
+
+    if error:
+        flash(error, "error")
+    else:
+        flash("Reply posted.", "success")
+
+    return redirect(_forum_redirect_target())
 
 
 @main_bp.route("/events")

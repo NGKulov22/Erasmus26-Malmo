@@ -3,6 +3,8 @@ from pathlib import Path
 
 from flask import current_app, g
 
+from app.data.content import FORUM_POSTS
+
 
 def _parse_legacy_int_csv(value: str) -> list[int]:
     if not value:
@@ -40,6 +42,50 @@ def _migrate_legacy_saved_places(connection: sqlite3.Connection) -> None:
     except sqlite3.OperationalError:
         # Some SQLite builds do not support DROP COLUMN.
         pass
+
+
+def _time_ago_to_sqlite_modifier(value: str) -> str:
+    raw = (value or "").strip().lower()
+    if not raw:
+        return "-1 day"
+
+    token = raw.split()[0]
+    if len(token) < 2 or not token[:-1].isdigit():
+        return "-1 day"
+
+    amount = int(token[:-1])
+    unit = token[-1]
+
+    if unit == "h":
+        return f"-{amount} hours"
+    if unit == "d":
+        return f"-{amount} days"
+    if unit == "w":
+        return f"-{amount * 7} days"
+
+    return "-1 day"
+
+
+def _seed_forum_posts(connection: sqlite3.Connection) -> None:
+    existing = connection.execute("SELECT COUNT(*) AS total FROM forum_posts").fetchone()
+    if existing and int(existing["total"]) > 0:
+        return
+
+    for post in FORUM_POSTS:
+        modifier = _time_ago_to_sqlite_modifier(post.get("time_ago", ""))
+        connection.execute(
+            """
+            INSERT INTO forum_posts (author_name, category, title, content, created_at)
+            VALUES (?, ?, ?, ?, datetime('now', ?))
+            """,
+            (
+                post.get("author", "Community member"),
+                post.get("category", "General"),
+                post.get("title", "Untitled post"),
+                post.get("content", ""),
+                modifier,
+            ),
+        )
 
 
 def get_db() -> sqlite3.Connection:
@@ -86,9 +132,42 @@ def init_db() -> None:
         )
         """
     )
+    connection.execute(
+        """
+        CREATE TABLE IF NOT EXISTS forum_posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            author_name TEXT NOT NULL,
+            category TEXT NOT NULL,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+        )
+        """
+    )
+    connection.execute(
+        """
+        CREATE TABLE IF NOT EXISTS forum_replies (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            post_id INTEGER NOT NULL,
+            user_id INTEGER,
+            author_name TEXT NOT NULL,
+            content TEXT NOT NULL,
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (post_id) REFERENCES forum_posts(id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+        )
+        """
+    )
     connection.execute("CREATE INDEX IF NOT EXISTS idx_user_saved_places_user ON user_saved_places(user_id)")
     connection.execute("CREATE INDEX IF NOT EXISTS idx_user_saved_places_place ON user_saved_places(place_id)")
+    connection.execute("CREATE INDEX IF NOT EXISTS idx_forum_posts_category ON forum_posts(category)")
+    connection.execute("CREATE INDEX IF NOT EXISTS idx_forum_posts_created_at ON forum_posts(created_at)")
+    connection.execute("CREATE INDEX IF NOT EXISTS idx_forum_replies_post_id ON forum_replies(post_id)")
+    connection.execute("CREATE INDEX IF NOT EXISTS idx_forum_replies_created_at ON forum_replies(created_at)")
     _migrate_legacy_saved_places(connection)
+    _seed_forum_posts(connection)
     connection.commit()
 
 

@@ -14,10 +14,63 @@
             <p>Ask questions, share experiences, connect with others.</p>
         </div>
 
-        <a href="#" class="new-post-btn">
+        <a href="#new-post" class="new-post-btn">
             <i class="fa-solid fa-plus"></i>
             New Post
         </a>
+    </section>
+
+    <section class="post-create" id="new-post">
+        <h2>Start New Topic</h2>
+
+        {% if is_logged_in %}
+            <form class="post-create-form" method="post" action="/forum/posts">
+                <input type="hidden" name="q" value="{{ query }}">
+                <input type="hidden" name="category" value="{{ selected_category }}">
+                <input type="hidden" name="sort" value="{{ selected_sort }}">
+
+                <div class="post-grid">
+                    <input
+                        type="text"
+                        name="title"
+                        maxlength="120"
+                        required
+                        placeholder="Post title"
+                    >
+
+                    <input
+                        type="text"
+                        name="topic"
+                        maxlength="40"
+                        required
+                        placeholder="Topic (for example: housing, jobs, social)"
+                        list="forum-topic-options"
+                    >
+                </div>
+
+                <datalist id="forum-topic-options">
+                    {% for category in categories if category != 'all' %}
+                        <option value="{{ category|title }}">
+                    {% endfor %}
+                </datalist>
+
+                <textarea
+                    name="content"
+                    rows="4"
+                    maxlength="2000"
+                    required
+                    placeholder="Describe your question or topic..."
+                ></textarea>
+
+                <div class="post-create-actions">
+                    <button type="submit">Publish Topic</button>
+                </div>
+            </form>
+        {% else %}
+            <p class="login-hint">
+                Please <a href="{{ url_for('auth_bp.login', next=request.path) }}">log in</a> to create a topic.
+            </p>
+        {% endif %}
     </section>
 
     <form class="search-bar" method="get" action="{{ url_for('main_bp.forum') }}">
@@ -102,6 +155,41 @@
                     <div class="forum-footer">
                         <span><i class="fa-regular fa-message"></i> {{ post.replies }} replies</span>
                     </div>
+
+                    <div class="reply-list">
+                        {% for reply in post.reply_items %}
+                            <article class="reply-item">
+                                <div class="reply-head">
+                                    <strong>{{ reply.author }}</strong>
+                                    <span>{{ reply.time_ago }}</span>
+                                </div>
+                                <p>{{ reply.content }}</p>
+                            </article>
+                        {% else %}
+                            <p class="reply-empty">No replies yet. Be the first to answer.</p>
+                        {% endfor %}
+                    </div>
+
+                    {% if is_logged_in %}
+                        <form class="reply-form" method="post" action="/forum/posts/{{ post.id }}/replies">
+                            <input type="hidden" name="q" value="{{ query }}">
+                            <input type="hidden" name="category" value="{{ selected_category }}">
+                            <input type="hidden" name="sort" value="{{ selected_sort }}">
+
+                            <input
+                                type="text"
+                                name="content"
+                                maxlength="280"
+                                required
+                                placeholder="Write a short reply (max 280 chars)..."
+                            >
+                            <button type="submit">Reply</button>
+                        </form>
+                    {% else %}
+                        <p class="login-hint small">
+                            <a href="{{ url_for('auth_bp.login', next=request.path) }}">Log in</a> to reply.
+                        </p>
+                    {% endif %}
                 </div>
             </article>
         {% else %}

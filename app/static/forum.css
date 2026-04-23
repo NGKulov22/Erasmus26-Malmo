@@ -50,6 +50,85 @@
     box-shadow: 0 16px 30px rgba(239, 148, 140, 0.32);
 }
 
+.post-create {
+    background: #fff;
+    border-radius: 26px;
+    padding: 24px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    margin-bottom: 28px;
+}
+
+.post-create h2 {
+    margin: 0 0 14px;
+    color: #10294b;
+}
+
+.post-create-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.post-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.post-create-form input,
+.post-create-form textarea,
+.reply-form input {
+    border: 2px solid #dce2eb;
+    border-radius: 14px;
+    padding: 11px 13px;
+    font-size: 0.98rem;
+    color: #24344d;
+    outline: none;
+}
+
+.post-create-form input:focus,
+.post-create-form textarea:focus,
+.reply-form input:focus {
+    border-color: #9edfd5;
+}
+
+.post-create-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.post-create-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.post-create-actions button,
+.reply-form button {
+    border: none;
+    border-radius: 12px;
+    padding: 10px 16px;
+    background: linear-gradient(90deg, #9edfd5, #ef948c);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.login-hint {
+    margin: 0;
+    color: #4d5c72;
+}
+
+.login-hint.small {
+    margin-top: 10px;
+    font-size: 0.95rem;
+}
+
+.login-hint a {
+    color: #cc6058;
+    font-weight: 700;
+    text-decoration: none;
+}
+
 /* SEARCH */
 .search-bar {
     background: #fff;
@@ -381,6 +460,50 @@
     font-size: 1rem;
 }
 
+.reply-list {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.reply-item {
+    background: #f6f8fb;
+    border-radius: 14px;
+    padding: 12px;
+}
+
+.reply-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+    color: #42566f;
+    font-size: 0.9rem;
+}
+
+.reply-item p {
+    margin: 0;
+    color: #394c65;
+    line-height: 1.45;
+}
+
+.reply-empty {
+    margin: 0;
+    color: #6c7b91;
+    font-size: 0.95rem;
+}
+
+.reply-form {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+}
+
+.reply-form input {
+    flex: 1;
+}
+
 .forum-empty {
     justify-content: center;
     text-align: center;
@@ -414,6 +537,10 @@
         padding: 20px;
     }
 
+    .post-grid {
+        grid-template-columns: 1fr;
+    }
+
     .forum-card {
         flex-direction: column;
         padding: 22px;
@@ -433,5 +560,9 @@
 
     .forum-description {
         font-size: 1rem;
+    }
+
+    .reply-form {
+        flex-direction: column;
     }
 }
