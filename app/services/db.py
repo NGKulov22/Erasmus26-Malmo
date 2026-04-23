@@ -1,12 +1,27 @@
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlsplit, urlunsplit
-
+import os
 from flask import current_app, g
 from psycopg import Connection, OperationalError, connect, sql
 from psycopg.rows import dict_row
 
 from app.data.content import FORUM_POSTS
 
+
+def get_db() -> Connection:
+    if "db" not in g:
+        database_url = current_app.config["DATABASE_URL"]
+
+        try:
+            g.db = connect(database_url, row_factory=dict_row)
+        except OperationalError as connection_error:
+            if not _is_missing_database_error(connection_error):
+                raise
+
+            _ensure_database_exists(database_url)
+            g.db = connect(database_url, row_factory=dict_row)
+    print("DATABASE_URL =", database_url)
+    return g.db
 
 def _time_ago_to_delta(value: str) -> timedelta:
     raw = (value or "").strip().lower()
