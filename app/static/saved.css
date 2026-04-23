@@ -1,0 +1,186 @@
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 40px 20px;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #a9e2d7, #f4a39a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    text-align: center;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+/* ===================== */
+/* TABS */
+/* ===================== */
+
+.saved-tabs {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 25px;
+    padding: 6px;
+    margin-bottom: 40px;
+    gap: 6px;
+}
+
+/* TAB */
+.tab {
+    flex: 1;
+    border: none;
+    padding: 12px;
+    border-radius: 20px;
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+/* COUNT */
+.tab span {
+    margin-left: 6px;
+    background: rgba(0,0,0,0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+}
+
+/* ✅ HOVER (YOU WANTED THIS) */
+.tab:hover {
+    background: #f4e7a3;
+    transform: scale(1.05);
+}
+
+/* ACTIVE */
+.tab.active {
+    background: linear-gradient(90deg, #a9e2d7, #f4a39a);
+    color: white;
+}
+
+/* ===================== */
+/* GRID */
+/* ===================== */
+
+.saved-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+/* ✅ IMPORTANT (for tab switching) */
+.hidden {
+    display: none;
+}
+
+/* ===================== */
+/* CARD */
+/* ===================== */
+
+.saved-card {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.saved-card:hover {
+    transform: scale(1.03);
+}
+
+/* IMAGE */
+.card-image {
+    position: relative;
+    height: 180px;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ACTION BUTTONS */
+.card-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+.delete-btn,
+.link-btn {
+    border: none;
+    background: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* DELETE HOVER */
+.delete-btn:hover {
+    background: #ffe5e5;
+    color: red;
+    transform: scale(1.1);
+}
+
+/* LINK HOVER */
+.link-btn:hover {
+    background: #e5f3ff;
+    transform: scale(1.1);
+}
+
+/* CONTENT */
+.card-content {
+    padding: 15px;
+}
+
+.title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ⭐ RATING */
+.rating {
+    background: #fef3c7;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+#posts .rating {
+    background: #e5e7eb;
+}
+/* LOCATION */
+.location {
+    margin: 8px 0;
+    color: #555;
+}
+
+/* FOOTER */
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+/* PRICE */
+.price {
+    color: #f26a5c;
+}
+
+.price.free {
+    color: #f26a5c;
+}

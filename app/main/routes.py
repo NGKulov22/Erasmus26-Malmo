@@ -67,14 +67,21 @@ def toggle_place_save(place_id: int):
 
 
 @main_bp.route("/saved")
-@login_required
+#@login_required
 def saved():
-    saved_places = get_places_by_ids(g.current_user["saved_place_ids"])
-    suggested_places = get_recommended_places(g.current_user["interests"], limit=3)
+    #saved_places = get_places_by_ids(g.current_user["saved_place_ids"])
+    #suggested_places = get_recommended_places(g.current_user["interests"], limit=3)
     return render_template(
         "saved.html",
-        saved_places=saved_places,
-        suggested_places=suggested_places,
+        #saved_places=saved_places,
+        #suggested_places=suggested_places,
     )
+@main_bp.route("/saved-events")
+def saved_events():
+    return render_template("savedEvents.html")
 
+
+@main_bp.route("/saved-posts")
+def saved_posts():
+    return render_template("savedPosts.html")
 
