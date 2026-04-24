@@ -68,50 +68,47 @@
     <!-- INFO BOXES -->
     <section class="double-grid">
 
-        <!-- INTERESTS -->
-        <div class="info-card">
+    <!-- INTERESTS -->
+    <div class="info-card">
 
-            <div class="section-title mint">Interests</div>
+        <div class="section-title mint">Interests</div>
+
+        <div class="tags-wrap">
+            {% for interest in user["interests"] %}
+                <span class="tag">{{ interest }}</span>
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <!-- PREFERENCES -->
+    <div class="info-card">
+
+        <div class="section-title coral">Preferences</div>
+
+        <div class="pref-group">
+            <label>Favorite Neighborhoods</label>
 
             <div class="tags-wrap">
-                <span class="tag">Coffee & Cafés</span>
-                <span class="tag">Restaurants & Food</span>
-                <span class="tag">Nature & Outdoors</span>
-                <span class="tag">Culture & Arts</span>
-                <span class="tag">Swedish Language</span>
-                <span class="tag">Social Events</span>
+                <span class="tag soft">Centrum</span>
+                <span class="tag soft">Västra Hamnen</span>
+                <span class="tag soft">Möllevången</span>
             </div>
-
         </div>
 
-        <!-- PREFERENCES -->
-        <div class="info-card">
-
-            <div class="section-title coral">Preferences</div>
-
-            <div class="pref-group">
-                <label>Favorite Neighborhoods</label>
-
-                <div class="tags-wrap">
-                    <span class="tag soft">Centrum</span>
-                    <span class="tag soft">Västra Hamnen</span>
-                    <span class="tag soft">Möllevången</span>
-                </div>
-            </div>
-
-            <div class="pref-group">
-                <label>Budget Preference</label>
-                <span class="tag pink-tag">Moderate (100-200kr)</span>
-            </div>
-
-            <div class="pref-group">
-                <label>Social Style</label>
-                <span class="tag pink-tag">Small intimate gatherings</span>
-            </div>
-
+        <div class="pref-group">
+            <label>Budget Preference</label>
+            <span class="tag pink-tag">Moderate (100-200kr)</span>
         </div>
 
-    </section>
+        <div class="pref-group">
+            <label>Social Style</label>
+            <span class="tag pink-tag">Small intimate gatherings</span>
+        </div>
+
+    </div>
+
+</section>
 
     <!-- RECENT ACTIVITY -->
     <section class="activity-card">

@@ -26,9 +26,9 @@ def login():
         if next_page.startswith("/"):
             return redirect(next_page)
         return redirect(url_for("main_bp.home"))
-
+    if register_user["interests"]:
+        register_user["interests"] = register_user["interests"].split(",")
     return render_template("login.html", next_page=next_page)
-
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
@@ -36,27 +36,36 @@ def register():
         return redirect(url_for("main_bp.home"))
 
     if request.method == "POST":
-        full_name = request.form.get("full_name", "")
-        email = request.form.get("email", "")
+
+        full_name = request.form.get("full_name", "").strip()
+        email = request.form.get("email", "").strip()
         password = request.form.get("password", "")
         confirm_password = request.form.get("confirm_password", "")
-        interests = request.form.get("interests", "")
+
+        # ✅ get multiple selected interests from checkboxes
+        interests = request.form.getlist("interests")
 
         if password != confirm_password:
             flash("Passwords do not match.", "error")
             return render_template("register.html")
 
+        # convert list -> text for database
+        interests_raw = ",".join(interests)
+
         user, error = register_user(
             full_name=full_name,
             email=email,
             password=password,
-            interests_raw=interests,
+            interests_raw=interests_raw,
         )
+
         if error:
             flash(error, "error")
             return render_template("register.html")
 
+        # login user after register
         session["user_id"] = user["id"]
+
         flash("Registration successful.", "success")
         return redirect(url_for("main_bp.home"))
 
