@@ -26,8 +26,7 @@ def login():
         if next_page.startswith("/"):
             return redirect(next_page)
         return redirect(url_for("main_bp.home"))
-    if register_user["interests"]:
-        register_user["interests"] = register_user["interests"].split(",")
+
     return render_template("login.html", next_page=next_page)
 
 @auth_bp.route("/register", methods=["GET", "POST"])

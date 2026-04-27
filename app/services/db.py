@@ -4,13 +4,13 @@ import os
 from flask import current_app, g
 from psycopg import Connection, OperationalError, connect, sql
 from psycopg.rows import dict_row
-
+import os
 from app.data.content import FORUM_POSTS
 
 
 def get_db() -> Connection:
     if "db" not in g:
-        database_url = current_app.config["DATABASE_URL"]
+        database_url = os.getenv("DATABASE_URL")  # returns None if not set
 
         try:
             g.db = connect(database_url, row_factory=dict_row)
