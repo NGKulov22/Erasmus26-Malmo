@@ -147,6 +147,17 @@ def init_db() -> None:
     )
     connection.execute(
         """
+        CREATE TABLE IF NOT EXISTS user_saved_events (
+            user_id BIGINT NOT NULL,
+            event_id INTEGER NOT NULL,
+            saved_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (user_id, event_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+        """
+    )
+    connection.execute(
+        """
         CREATE TABLE IF NOT EXISTS forum_posts (
             id BIGSERIAL PRIMARY KEY,
             user_id BIGINT,
@@ -175,6 +186,8 @@ def init_db() -> None:
     )
     connection.execute("CREATE INDEX IF NOT EXISTS idx_user_saved_places_user ON user_saved_places(user_id)")
     connection.execute("CREATE INDEX IF NOT EXISTS idx_user_saved_places_place ON user_saved_places(place_id)")
+    connection.execute("CREATE INDEX IF NOT EXISTS idx_user_saved_events_user ON user_saved_events(user_id)")
+    connection.execute("CREATE INDEX IF NOT EXISTS idx_user_saved_events_event ON user_saved_events(event_id)")
     connection.execute("CREATE INDEX IF NOT EXISTS idx_forum_posts_category ON forum_posts(category)")
     connection.execute("CREATE INDEX IF NOT EXISTS idx_forum_posts_created_at ON forum_posts(created_at)")
     connection.execute("CREATE INDEX IF NOT EXISTS idx_forum_replies_post_id ON forum_replies(post_id)")

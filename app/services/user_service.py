@@ -29,6 +29,14 @@ def _get_saved_place_ids(user_id: int) -> list[int]:
     return [int(row["place_id"]) for row in rows]
 
 
+def _get_saved_event_ids(user_id: int) -> list[int]:
+    rows = get_db().execute(
+        "SELECT event_id FROM user_saved_events WHERE user_id = %s ORDER BY event_id",
+        (user_id,),
+    ).fetchall()
+    return [int(row["event_id"]) for row in rows]
+
+
 def _row_to_user(row) -> dict | None:
     if row is None:
         return None
@@ -41,6 +49,7 @@ def _row_to_user(row) -> dict | None:
         "email": row["email"],
         "interests": _parse_csv(row["interests"]),
         "saved_place_ids": _get_saved_place_ids(user_id),
+        "saved_event_ids": _get_saved_event_ids(user_id),
         "created_at": row["created_at"],
     }
 
@@ -121,6 +130,32 @@ def toggle_saved_place(user_id: int, place_id: int) -> bool:
     connection.execute(
         "INSERT INTO user_saved_places (user_id, place_id) VALUES (%s, %s)",
         (user_id, place_id),
+    )
+    connection.commit()
+    return True
+
+
+def toggle_saved_event(user_id: int, event_id: int) -> bool:
+    if get_user_by_id(user_id) is None:
+        return False
+
+    connection = get_db()
+    existing = connection.execute(
+        "SELECT 1 FROM user_saved_events WHERE user_id = %s AND event_id = %s",
+        (user_id, event_id),
+    ).fetchone()
+
+    if existing:
+        connection.execute(
+            "DELETE FROM user_saved_events WHERE user_id = %s AND event_id = %s",
+            (user_id, event_id),
+        )
+        connection.commit()
+        return False
+
+    connection.execute(
+        "INSERT INTO user_saved_events (user_id, event_id) VALUES (%s, %s)",
+        (user_id, event_id),
     )
     connection.commit()
     return True

@@ -15,70 +15,81 @@
 
     <!-- TABS -->
     <div class="saved-tabs">
-        <button class="tab active" type="button" data-type="places">Places <span>3</span></button>
-        <button class="tab" type="button" data-type="events">Events <span>2</span></button>
+        <button class="tab active" type="button" data-type="places">Places <span>{{ saved_places|length }}</span></button>
+        <button class="tab" type="button" data-type="events">Events <span>{{ saved_events|length }}</span></button>
         <button class="tab" type="button" data-type="posts">Posts <span>3</span></button>
     </div>
 
     <!-- PLACES -->
     <div class="saved-grid" id="places">
-
-        <!-- CARD -->
-        <div class="saved-card">
-            <div class="card-image">
-                <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb">
-                <div class="card-actions">
-                    <button class="delete-btn" type="button"><i class="fa-solid fa-trash"></i></button>
-                    <button class="link-btn" type="button"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+        {% if saved_places %}
+            {% for place in saved_places %}
+            <!-- CARD -->
+            <div class="saved-card">
+                <div class="card-image">
+                    <img src="{{ place.image_url }}" alt="{{ place.name }}">
+                    <div class="card-actions">
+                        <form action="{{ url_for('main_bp.toggle_place_save', place_id=place.id) }}" method="POST" style="display: inline;">
+                            <button class="delete-btn" type="submit"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                        <button class="link-btn" type="button"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="title-row">
+                        <h3>{{ place.name }}</h3>
+                        <span class="rating">⭐ {{ place.rating }}</span>
+                    </div>
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> {{ place.location }}</p>
+                    <div class="card-footer">
+                        <span>{{ place.category|title }}</span>
+                        <span class="price">{{ place.price_label }}</span>
+                    </div>
                 </div>
             </div>
-            <div class="card-content">
-                <div class="title-row">
-                    <h3>Lilla Kafferosteriet</h3>
-                    <span class="rating">⭐ 4.8</span>
-                </div>
-                <p class="location"><i class="fa-solid fa-location-dot"></i> Gamla Väster</p>
-                <div class="card-footer">
-                    <span>Saved 2 days ago</span>
-                    <span class="price">$$</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- MORE CARDS... -->
+            {% endfor %}
+        {% else %}
+            <p>You haven't saved any places yet.</p>
+        {% endif %}
     </div>
 
     <!-- EVENTS -->
-        <div class="saved-grid hidden" id="events">
+    <div class="saved-grid hidden" id="events">
+        {% if saved_events %}
+            {% for event in saved_events %}
+            <div class="saved-card">
+                <div class="card-image">
+                    <img src="{{ event.image_url }}" alt="{{ event.title }}">
 
-    <div class="saved-card">
-        <div class="card-image">
-            <img src="https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf">
+                    <div class="card-actions">
+                        <form action="{{ url_for('main_bp.toggle_event_save', event_id=event.id) }}" method="POST" style="display: inline;">
+                            <button class="delete-btn" type="submit"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                        <button class="link-btn" type="button"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                    </div>
+                </div>
 
-            <div class="card-actions">
-                <button class="delete-btn" type="button"><i class="fa-solid fa-trash"></i></button>
-                <button class="link-btn" type="button"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                <div class="card-content">
+                    <div class="title-row">
+                        <h3>{{ event.title }}</h3>
+                        <span class="rating">⭐ 4.7</span>
+                    </div>
+
+                    <p class="location">
+                        <i class="fa-solid fa-location-dot"></i> {{ event.location }}
+                    </p>
+
+                    <div class="card-footer">
+                        <span>{{ event.date_label }} at {{ event.time_label }}</span>
+                        <span class="price">Free</span>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <div class="card-content">
-            <div class="title-row">
-                <h3>Beach Volleyball Tournament</h3>
-                <span class="rating">⭐ 4.7</span>
-            </div>
-
-            <p class="location">
-                <i class="fa-solid fa-location-dot"></i> Västra Hamnen Beach
-            </p>
-
-            <div class="card-footer">
-                <span>Saved event</span>
-                <span class="price">Free</span>
-            </div>
-        </div>
+            {% endfor %}
+        {% else %}
+            <p>You haven't attended any events yet.</p>
+        {% endif %}
     </div>
-
-</div>
 
     <!-- POSTS -->
     <div class="saved-grid hidden" id="posts">
@@ -132,7 +143,7 @@ tabs.forEach(tab => {
 });
 
 // DELETE CARD
-document.querySelectorAll('.delete-btn').forEach(btn => {
+document.querySelectorAll('.delete-btn:not([type="submit"])').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
         btn.closest('.saved-card').remove();

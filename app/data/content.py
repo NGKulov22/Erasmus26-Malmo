@@ -59,31 +59,52 @@ PLACES = [
 EVENTS = [
     {
         "id": 1,
+        "category": "social",
         "title": "International Student Meetup",
         "date_label": "25 Apr",
-        "time_label": "18:00",
+        "time_label": "16:00",
         "location": "Folkets Park",
-        "description": "Meet other new students and discover city tips.",
+        "description": "Meet fellow international students, make friends, and enjoy games in the park.",
         "participants": 45,
+        "image_url": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac",
+        "organizer": "Malmö Students"
     },
     {
         "id": 2,
+        "category": "language",
         "title": "Swedish Fika and Language Exchange",
         "date_label": "27 Apr",
-        "time_label": "15:00",
-        "location": "Lilla Kafferosteriet",
-        "description": "Practice Swedish in a relaxed cafe setting.",
+        "time_label": "18:00",
+        "location": "City Café",
+        "description": "Practice your Swedish in a relaxed café environment while enjoying fika.",
         "participants": 28,
+        "image_url": "https://images.unsplash.com/photo-1556740738-b6a63e27c4df",
+        "organizer": "Language Club"
     },
     {
         "id": 3,
-        "title": "CV Workshop for International Students",
-        "date_label": "30 Apr",
-        "time_label": "17:30",
-        "location": "Malmo University",
-        "description": "Build a Sweden-ready CV and get practical feedback.",
+        "category": "sports",
+        "title": "Beach Volleyball Tournament",
+        "date_label": "28 Apr",
+        "time_label": "14:00",
+        "location": "Västra Hamnen",
+        "description": "Friendly beach volleyball tournament for all skill levels.",
         "participants": 36,
+        "image_url": "https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf",
+        "organizer": "Sports Club"
     },
+    {
+        "id": 4,
+        "category": "food",
+        "title": "Nordic Food Tasting Night",
+        "date_label": "30 Apr",
+        "time_label": "19:00",
+        "location": "Malmö Saluhall",
+        "description": "Explore Nordic cuisine and discover Swedish food culture.",
+        "participants": 50,
+        "image_url": "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
+        "organizer": "Culinary Explorers"
+    }
 ]
 
 FORUM_POSTS = [

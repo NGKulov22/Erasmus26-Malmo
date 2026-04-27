@@ -45,6 +45,15 @@ def get_events() -> list[dict]:
     return EVENTS
 
 
+def get_event_by_id(event_id: int) -> dict | None:
+    return next((event for event in EVENTS if event["id"] == event_id), None)
+
+
+def get_events_by_ids(event_ids: list[int]) -> list[dict]:
+    by_id = {event["id"]: event for event in EVENTS}
+    return [by_id[eid] for eid in event_ids if eid in by_id]
+
+
 def _time_ago_to_hours(value: str) -> int:
     parts = value.strip().split()
     if len(parts) < 2:

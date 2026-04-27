@@ -4,6 +4,8 @@ from app.services.content_service import (
     create_forum_post,
     create_forum_reply,
     get_events,
+    get_event_by_id,
+    get_events_by_ids,
     get_forum_categories,
     get_forum_posts,
     get_place_by_id,
@@ -12,7 +14,7 @@ from app.services.content_service import (
     get_places_by_ids,
     get_recommended_places,
 )
-from app.services.user_service import toggle_saved_place
+from app.services.user_service import toggle_saved_place, toggle_saved_event
 from app.utils.auth import login_required
 from . import main_bp
 
@@ -91,7 +93,20 @@ def forum_create_reply(post_id: int):
 
 @main_bp.route("/events")
 def events():
-    return render_template("events.html", events=get_events())
+    saved_ids = set(g.current_user.get("saved_event_ids", [])) if g.current_user else set()
+    return render_template("events.html", events=get_events(), saved_ids=saved_ids)
+
+
+@main_bp.route("/events/<int:event_id>/toggle-save", methods=["POST"])
+@login_required
+def toggle_event_save(event_id: int):
+    if get_event_by_id(event_id) is None:
+        flash("Event not found.", "error")
+        return redirect(url_for("main_bp.events"))
+
+    is_saved = toggle_saved_event(g.current_user["id"], event_id)
+    flash("Event saved." if is_saved else "Event removed from saved.", "success")
+    return redirect(request.referrer or url_for("main_bp.events"))
 
 
 @main_bp.route("/places")
@@ -125,14 +140,16 @@ def toggle_place_save(place_id: int):
 
 
 @main_bp.route("/saved")
-#@login_required
+@login_required
 def saved():
-    #saved_places = get_places_by_ids(g.current_user["saved_place_ids"])
-    #suggested_places = get_recommended_places(g.current_user["interests"], limit=3)
+    saved_places = get_places_by_ids(g.current_user.get("saved_place_ids", []))
+    saved_events = get_events_by_ids(g.current_user.get("saved_event_ids", []))
+    suggested_places = get_recommended_places(g.current_user["interests"], limit=3)
     return render_template(
         "saved.html",
-        #saved_places=saved_places,
-        #suggested_places=suggested_places,
+        saved_places=saved_places,
+        saved_events=saved_events,
+        suggested_places=suggested_places,
     )
 @main_bp.route("/saved-events")
 def saved_events():
