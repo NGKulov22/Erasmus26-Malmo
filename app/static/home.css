@@ -23,7 +23,7 @@
     margin-bottom: 40px;
 }
 
-.hero-btn {
+.recommend-btn {
     display: inline-flex;
     align-items: center;
     gap: 14px;
@@ -38,7 +38,7 @@
     transition: all 0.28s ease;
 }
 
-.hero-btn:hover {
+.recommend-btn:hover {
     transform: translateY(-3px) scale(1.03);
     box-shadow: 0 18px 35px rgba(242, 146, 137, 0.35);
 }

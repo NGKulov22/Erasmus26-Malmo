@@ -1,5 +1,5 @@
 from flask import flash, g, redirect, render_template, request, url_for
-
+from app.services.db import save_user_preferences, get_user_preferences
 from app.services.content_service import (
     create_forum_post,
     create_forum_reply,
@@ -30,13 +30,6 @@ def _forum_redirect_target() -> str:
 @main_bp.route("/")
 def home():
     return render_template("home.html")
-
-
-@main_bp.route("/recommendations")
-def recommendations():
-    interests = g.current_user["interests"] if g.current_user else []
-    places = get_recommended_places(interests)
-    return render_template("recommendations.html", places=places, interests=interests)
 
 
 @main_bp.route("/forum")
@@ -168,3 +161,107 @@ def toggle_post_save(post_id):
     flash("Post saved." if is_saved else "Post removed.", "success")
 
     return redirect(request.referrer or url_for("main_bp.forum"))
+@main_bp.route("/survey", methods=["GET", "POST"])
+@login_required
+def survey():
+    if request.method == "POST":
+        purpose = request.form.get("purpose", "")
+        interests = request.form.getlist("interests")
+        budget = request.form.get("budget", "")
+        neighborhoods = request.form.getlist("neighborhoods")
+        social_style = request.form.get("social_style", "")
+
+        save_user_preferences(
+            g.current_user["id"],
+            purpose,
+            interests,
+            budget,
+            neighborhoods,
+            social_style
+        )
+
+        return redirect(url_for("main_bp.recommendations"))
+
+    return render_template("survey.html")
+
+
+@main_bp.route("/recommendations")
+@login_required
+def recommendations():
+    preferences = get_user_preferences(g.current_user["id"])
+
+    if not preferences:
+        return redirect(url_for("main_bp.survey"))
+
+    interests = preferences["interests"].split(",") if preferences["interests"] else []
+    neighborhoods = preferences["neighborhoods"].split(",") if preferences["neighborhoods"] else []
+    budget = preferences["budget"]
+    social_style = preferences["social_style"]
+
+    recommended_places = [
+        {
+            "name": "Lilla Kafferosteriet",
+            "category": "Coffee & Cafés",
+            "location": "Gamla Väster",
+            "rating": "4.8",
+            "image": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb",
+            "match": 95,
+            "quote": "Great for fika, studying, and meeting friends"
+        },
+        {
+            "name": "Malmö City Library",
+            "category": "Study",
+            "location": "Centrum",
+            "rating": "4.9",
+            "image": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f",
+            "match": 92,
+            "quote": "Quiet zones, great facilities, free WiFi"
+        },
+        {
+            "name": "Falafel No. 1",
+            "category": "Restaurants & Food",
+            "location": "Möllevången",
+            "rating": "4.8",
+            "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38",
+            "match": 91,
+            "quote": "Budget-friendly, authentic, popular with students"
+        }
+    ]
+
+    recommended_events = [
+        {
+            "title": "International Student Meetup",
+            "date": "25 Apr",
+            "time": "18:00",
+            "location": "Folkets Park",
+            "match": 88,
+            "quote": "Great for meeting new people"
+        },
+        {
+            "title": "Swedish Language Café",
+            "date": "27 Apr",
+            "time": "15:00",
+            "location": "Lilla Kafferosteriet",
+            "match": 85,
+            "quote": "Practice Swedish in a relaxed setting"
+        }
+    ]
+
+    recommended_posts = [
+        {
+            "title": "Best place to buy affordable furniture?",
+            "author": "Maria K.",
+            "replies": 15,
+            "category": "Living",
+            "match": 78,
+            "quote": "Similar questions to yours"
+        }
+    ]
+
+    return render_template(
+        "recommendations.html",
+        places=recommended_places,
+        events=recommended_events,
+        posts=recommended_posts,
+        preferences=preferences
+    )

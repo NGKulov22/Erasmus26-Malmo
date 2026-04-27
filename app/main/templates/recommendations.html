@@ -1,37 +1,143 @@
 {% extends "base.html" %}
 
-{% block title %}Recommendations | Malmo Connect{% endblock %}
+{% block title %}Recommendations | Malmö Connect{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='pages.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='recommendations.css') }}">
 {% endblock %}
 
 {% block content %}
-<section class="page-wrap">
-    <div class="page-head">
-        <h1 class="page-title">Personalized Recommendations</h1>
-        {% if interests %}
-            <p class="page-subtitle">Based on your interests: {{ interests|join(', ') }}</p>
-        {% else %}
-            <p class="page-subtitle">Top picks from the community. Add interests in your profile by re-registering or editing DB data.</p>
-        {% endif %}
-    </div>
 
-    <div class="simple-grid">
-        {% for place in places %}
-            <article class="page-card">
-                <img class="place-cover" src="{{ place.image_url }}" alt="{{ place.name }}">
-                <h3>{{ place.name }}</h3>
-                <p class="place-meta">{{ place.location }} • {{ place.price_label }} • ⭐ {{ place.rating }}</p>
-                <p>{{ place.description }}</p>
+<div class="recommend-page">
 
-                <p>
-                    {% for tag in place.tags %}
-                        <span class="info-pill">{{ tag }}</span>
-                    {% endfor %}
-                </p>
+    <section class="recommend-hero">
+        <div class="hero-icon">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+        </div>
+
+        <h1>Your Personalized Dashboard</h1>
+        <p>Based on your preferences, here are our top recommendations for you</p>
+    </section>
+
+    <section class="recommend-section">
+        <h2>Cafés for You</h2>
+
+        <div class="recommend-grid">
+            {% for place in places[:2] %}
+            <article class="recommend-card">
+                <div class="recommend-image">
+                    <img src="{{ place.image }}">
+                    <span class="match-pill"><i class="fa-solid fa-heart"></i> {{ place.match }}% Match</span>
+                </div>
+
+                <div class="recommend-content">
+                    <div class="recommend-title-row">
+                        <h3>{{ place.name }}</h3>
+                        <span class="rating">⭐ {{ place.rating }}</span>
+                    </div>
+
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> {{ place.location }}</p>
+                    <p class="quote">"{{ place.quote }}"</p>
+                </div>
             </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="recommend-section">
+        <h2>Perfect Study Spots</h2>
+
+        <div class="recommend-grid single">
+            {% for place in places[1:2] %}
+            <article class="recommend-card">
+                <div class="recommend-image">
+                    <img src="{{ place.image }}">
+                    <span class="match-pill"><i class="fa-solid fa-heart"></i> {{ place.match }}% Match</span>
+                </div>
+
+                <div class="recommend-content">
+                    <div class="recommend-title-row">
+                        <h3>{{ place.name }}</h3>
+                        <span class="rating">⭐ {{ place.rating }}</span>
+                    </div>
+
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> {{ place.location }}</p>
+                    <p class="quote">"{{ place.quote }}"</p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="recommend-section">
+        <h2>Restaurants You'll Love</h2>
+
+        <div class="recommend-grid single">
+            {% for place in places[2:3] %}
+            <article class="recommend-card">
+                <div class="recommend-image">
+                    <img src="{{ place.image }}">
+                    <span class="match-pill"><i class="fa-solid fa-heart"></i> {{ place.match }}% Match</span>
+                </div>
+
+                <div class="recommend-content">
+                    <div class="recommend-title-row">
+                        <h3>{{ place.name }}</h3>
+                        <span class="rating">⭐ {{ place.rating }}</span>
+                    </div>
+
+                    <p class="location"><i class="fa-solid fa-location-dot"></i> {{ place.location }}</p>
+                    <p class="quote">"{{ place.quote }}"</p>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="recommend-section">
+        <h2>Events You Might Like</h2>
+
+        <div class="event-grid">
+            {% for event in events %}
+            <article class="event-recommend-card">
+                <div class="date-box">
+                    <strong>{{ event.date.split()[0] }}</strong>
+                    <span>{{ event.date.split()[1] }}</span>
+                </div>
+
+                <div class="event-info">
+                    <h3>{{ event.title }}</h3>
+                    <p><i class="fa-regular fa-calendar"></i> {{ event.time }}</p>
+                    <p><i class="fa-solid fa-location-dot"></i> {{ event.location }}</p>
+                    <p class="quote">"{{ event.quote }}"</p>
+                </div>
+
+                <span class="small-match">{{ event.match }}% Match</span>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="recommend-section">
+        <h2>Relevant Forum Discussions</h2>
+
+        {% for post in posts %}
+        <article class="forum-recommend-card">
+            <div class="forum-icon">
+                <i class="fa-regular fa-message"></i>
+            </div>
+
+            <div class="forum-recommend-content">
+                <h3>{{ post.title }}</h3>
+                <p>by {{ post.author }} • {{ post.replies }} replies • <span>{{ post.category }}</span></p>
+                <p class="quote">"{{ post.quote }}"</p>
+            </div>
+
+            <span class="small-match">{{ post.match }}% Match</span>
+        </article>
         {% endfor %}
-    </div>
-</section>
+    </section>
+
+</div>
+
 {% endblock %}

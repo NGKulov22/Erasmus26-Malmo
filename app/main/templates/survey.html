@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Survey | Malmö Connect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='survey.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<form method="POST" class="survey-page" id="surveyForm">
+
+    <div class="progress-top">
+        <span id="questionText">Question 1 of 5</span>
+        <span id="percentText">20%</span>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <!-- STEP 1 -->
+    <section class="survey-card step active">
+        <h1>What brings you to Malmö?</h1>
+
+        <label class="option">
+            <input type="radio" name="purpose" value="University" required>
+            <span>University</span>
+        </label>
+
+        <label class="option">
+            <input type="radio" name="purpose" value="Work">
+            <span>Work</span>
+        </label>
+
+        <label class="option">
+            <input type="radio" name="purpose" value="Travel">
+            <span>Travel</span>
+        </label>
+
+        <label class="option">
+            <input type="radio" name="purpose" value="Other">
+            <span>Other</span>
+        </label>
+    </section>
+
+    <!-- STEP 2 -->
+    <section class="survey-card step">
+        <h1>What are your interests?</h1>
+        <p class="hint">Select all that apply</p>
+
+        {% set interests = ["Coffee & Cafés", "Restaurants & Food", "Nightlife & Bars", "Nature & Outdoors", "Culture & Arts", "Sports & Fitness", "Study", "Social Events", "Museum"] %}
+
+        {% for item in interests %}
+        <label class="option">
+            <input type="checkbox" name="interests" value="{{ item }}">
+            <span>{{ item }}</span>
+        </label>
+        {% endfor %}
+    </section>
+
+    <!-- STEP 3 -->
+    <section class="survey-card step">
+        <h1>What's your budget preference?</h1>
+
+        <label class="option">
+            <input type="radio" name="budget" value="Budget-friendly (< 100kr)" required>
+            <span>Budget-friendly (&lt; 100kr)</span>
+        </label>
+
+        <label class="option">
+            <input type="radio" name="budget" value="Moderate (100-200kr)">
+            <span>Moderate (100-200kr)</span>
+        </label>
+
+        <label class="option">
+            <input type="radio" name="budget" value="Premium (200kr+)">
+            <span>Premium (200kr+)</span>
+        </label>
+
+        <label class="option">
+            <input type="radio" name="budget" value="Flexible">
+            <span>Flexible</span>
+        </label>
+    </section>
+
+    <!-- STEP 4 -->
+    <section class="survey-card step">
+        <h1>Which neighborhoods interest you?</h1>
+        <p class="hint">Select all that apply</p>
+
+        {% set neighborhoods = ["Centrum", "Västra Hamnen", "Möllevången", "Gamla Väster", "Limhamn", "Exploring everywhere"] %}
+
+        {% for area in neighborhoods %}
+        <label class="option">
+            <input type="checkbox" name="neighborhoods" value="{{ area }}">
+            <span>{{ area }}</span>
+        </label>
+        {% endfor %}
+    </section>
+
+    <!-- STEP 5 -->
+    <section class="survey-card step">
+        <h1>How do you like to socialize?</h1>
+
+        <label class="option">
+            <input type="radio" name="social_style" value="Large group events" required>
+            <span>Large group events</span>
+        </label>
+
+        <label class="option">
+            <input type="radio" name="social_style" value="Small intimate gatherings">
+            <span>Small intimate gatherings</span>
+        </label>
+
+        <label class="option">
+            <input type="radio" name="social_style" value="One-on-one meetups">
+            <span>One-on-one meetups</span>
+        </label>
+
+        <label class="option">
+            <input type="radio" name="social_style" value="Solo exploration">
+            <span>Solo exploration</span>
+        </label>
+    </section>
+
+    <div class="survey-actions">
+        <button type="button" class="back-btn" id="backBtn">
+            <i class="fa-solid fa-chevron-left"></i> Back
+        </button>
+
+        <button type="button" class="next-btn" id="nextBtn">
+            Next <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <button type="submit" class="next-btn hidden" id="submitBtn">
+            See My Recommendations <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+
+</form>
+
+<script>
+const steps = document.querySelectorAll(".step");
+const nextBtn = document.getElementById("nextBtn");
+const backBtn = document.getElementById("backBtn");
+const submitBtn = document.getElementById("submitBtn");
+const progressFill = document.getElementById("progressFill");
+const questionText = document.getElementById("questionText");
+const percentText = document.getElementById("percentText");
+
+let currentStep = 0;
+
+function updateSurvey() {
+    steps.forEach(step => step.classList.remove("active"));
+    steps[currentStep].classList.add("active");
+
+    const percent = ((currentStep + 1) / steps.length) * 100;
+    progressFill.style.width = percent + "%";
+    questionText.textContent = `Question ${currentStep + 1} of ${steps.length}`;
+    percentText.textContent = `${Math.round(percent)}%`;
+
+    backBtn.style.display = currentStep === 0 ? "none" : "inline-flex";
+
+    if (currentStep === steps.length - 1) {
+        nextBtn.classList.add("hidden");
+        submitBtn.classList.remove("hidden");
+    } else {
+        nextBtn.classList.remove("hidden");
+        submitBtn.classList.add("hidden");
+    }
+}
+
+nextBtn.addEventListener("click", () => {
+    if (currentStep < steps.length - 1) {
+        currentStep++;
+        updateSurvey();
+    }
+});
+
+backBtn.addEventListener("click", () => {
+    if (currentStep > 0) {
+        currentStep--;
+        updateSurvey();
+    }
+});
+
+updateSurvey();
+</script>
+
+{% endblock %}

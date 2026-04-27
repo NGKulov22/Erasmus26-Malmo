@@ -247,3 +247,58 @@ def toggle_saved_post(user_id, post_id):
     )
     connection.commit()
     return True
+
+def save_user_preferences(user_id, purpose, interests, budget, neighborhoods, social_style):
+    connection = get_db()
+
+    connection.execute(
+        """
+        CREATE TABLE IF NOT EXISTS user_preferences (
+            user_id BIGINT PRIMARY KEY,
+            purpose TEXT,
+            interests TEXT,
+            budget TEXT,
+            neighborhoods TEXT,
+            social_style TEXT,
+            updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+        """
+    )
+
+    connection.execute(
+        """
+        INSERT INTO user_preferences 
+        (user_id, purpose, interests, budget, neighborhoods, social_style)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        ON CONFLICT (user_id)
+        DO UPDATE SET
+            purpose = EXCLUDED.purpose,
+            interests = EXCLUDED.interests,
+            budget = EXCLUDED.budget,
+            neighborhoods = EXCLUDED.neighborhoods,
+            social_style = EXCLUDED.social_style,
+            updated_at = CURRENT_TIMESTAMP
+        """,
+        (
+            user_id,
+            purpose,
+            ",".join(interests),
+            budget,
+            ",".join(neighborhoods),
+            social_style,
+        )
+    )
+
+    connection.commit()
+
+
+def get_user_preferences(user_id):
+    connection = get_db()
+
+    row = connection.execute(
+        "SELECT * FROM user_preferences WHERE user_id = %s",
+        (user_id,)
+    ).fetchone()
+
+    return row
