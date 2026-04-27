@@ -11,20 +11,26 @@ def login():
         return redirect(url_for("main_bp.home"))
 
     next_page = request.args.get("next", "")
+
     if request.method == "POST":
-        email = request.form.get("email", "")
+
+        email = request.form.get("email", "").strip()
         password = request.form.get("password", "")
         next_page = request.form.get("next", "")
 
         user = authenticate_user(email=email, password=password)
+
         if not user:
             flash("Invalid email or password.", "error")
             return render_template("login.html", next_page=next_page)
 
         session["user_id"] = user["id"]
+
         flash(f"Welcome back, {user['full_name']}.", "success")
+
         if next_page.startswith("/"):
             return redirect(next_page)
+
         return redirect(url_for("main_bp.home"))
 
     return render_template("login.html", next_page=next_page)
