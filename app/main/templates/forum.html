@@ -8,6 +8,7 @@
 
 {% block content %}
 <div class="forum-page">
+
     <section class="forum-hero">
         <div>
             <h1>Community Forum</h1>
@@ -20,52 +21,45 @@
         </a>
     </section>
 
+    <!-- CREATE POST -->
     <section class="post-create" id="new-post">
         <h2>Start New Topic</h2>
 
         {% if is_logged_in %}
-            <form class="post-create-form" method="post" action="/forum/posts">
-                <input type="hidden" name="q" value="{{ query }}">
-                <input type="hidden" name="category" value="{{ selected_category }}">
-                <input type="hidden" name="sort" value="{{ selected_sort }}">
+        <form class="post-create-form" method="post" action="/forum/posts">
 
-                <div class="post-grid">
-                    <input
-                        type="text"
-                        name="title"
-                        maxlength="120"
-                        required
-                        placeholder="Post title"
-                    >
+            <input type="hidden" name="q" value="{{ query }}">
+            <input type="hidden" name="category" value="{{ selected_category }}">
+            <input type="hidden" name="sort" value="{{ selected_sort }}">
 
-                    <input
-                        type="text"
-                        name="topic"
-                        maxlength="40"
-                        required
-                        placeholder="Topic (for example: housing, jobs, social)"
-                        list="forum-topic-options"
-                    >
-                </div>
+            <div class="post-grid">
+                <input type="text" name="title" maxlength="120" required placeholder="Post title">
 
-                <datalist id="forum-topic-options">
-                    {% for category in categories if category != 'all' %}
-                        <option value="{{ category|title }}">
-                    {% endfor %}
-                </datalist>
+                <input type="text"
+                       name="topic"
+                       maxlength="40"
+                       required
+                       placeholder="Topic (housing, jobs, social...)"
+                       list="forum-topic-options">
+            </div>
 
-                <textarea
-                    name="content"
-                    rows="4"
-                    maxlength="2000"
-                    required
-                    placeholder="Describe your question or topic..."
-                ></textarea>
+            <datalist id="forum-topic-options">
+                {% for category in categories if category != 'all' %}
+                    <option value="{{ category|title }}">
+                {% endfor %}
+            </datalist>
 
-                <div class="post-create-actions">
-                    <button type="submit">Publish Topic</button>
-                </div>
-            </form>
+            <textarea name="content"
+                      rows="4"
+                      maxlength="2000"
+                      required
+                      placeholder="Describe your question or topic..."></textarea>
+
+            <div class="post-create-actions">
+                <button type="submit">Publish Topic</button>
+            </div>
+
+        </form>
         {% else %}
             <p class="login-hint">
                 Please <a href="{{ url_for('auth_bp.login', next=request.path) }}">log in</a> to create a topic.
@@ -73,133 +67,177 @@
         {% endif %}
     </section>
 
+    <!-- SEARCH -->
     <form class="search-bar" method="get" action="{{ url_for('main_bp.forum') }}">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" name="q" value="{{ query }}" placeholder="Search discussions...">
+
+        <input type="text"
+               name="q"
+               value="{{ query }}"
+               placeholder="Search discussions...">
+
         <input type="hidden" name="category" value="{{ selected_category }}">
         <input type="hidden" name="sort" value="{{ selected_sort }}">
+
         <button class="search-submit" type="submit">Search</button>
     </form>
 
+    <!-- FILTERS -->
     <section class="forum-filters">
+
         <div class="filter-group">
             <h3>Category</h3>
 
             <div class="filter-tags">
                 {% for category in categories %}
-                    <a
-                        class="filter-tag {% if selected_category == category %}active{% endif %}"
-                        href="{{ url_for('main_bp.forum', q=query, category=category, sort=selected_sort) }}"
-                    >
-                        {{ 'All' if category == 'all' else category|title }}
-                    </a>
+                <a class="filter-tag {% if selected_category == category %}active{% endif %}"
+                   href="{{ url_for('main_bp.forum', q=query, category=category, sort=selected_sort) }}">
+                    {{ 'All' if category == 'all' else category|title }}
+                </a>
                 {% endfor %}
             </div>
         </div>
 
         <div class="sort-row">
+
             <span>Sort by:</span>
 
-            <a
-                class="sort-btn {% if selected_sort == 'hot' %}active{% endif %}"
-                href="{{ url_for('main_bp.forum', q=query, category=selected_category, sort='hot') }}"
-            >
-                <i class="fa-solid fa-arrow-trend-up"></i>
-                Hot
+            <a class="sort-btn {% if selected_sort == 'hot' %}active{% endif %}"
+               href="{{ url_for('main_bp.forum', q=query, category=selected_category, sort='hot') }}">
+                <i class="fa-solid fa-arrow-trend-up"></i> Hot
             </a>
 
-            <a
-                class="sort-btn {% if selected_sort == 'new' %}active{% endif %}"
-                href="{{ url_for('main_bp.forum', q=query, category=selected_category, sort='new') }}"
-            >
-                <i class="fa-regular fa-clock"></i>
-                New
+            <a class="sort-btn {% if selected_sort == 'new' %}active{% endif %}"
+               href="{{ url_for('main_bp.forum', q=query, category=selected_category, sort='new') }}">
+                <i class="fa-regular fa-clock"></i> New
             </a>
 
-            <a
-                class="sort-btn {% if selected_sort == 'top' %}active{% endif %}"
-                href="{{ url_for('main_bp.forum', q=query, category=selected_category, sort='top') }}"
-            >
+            <a class="sort-btn {% if selected_sort == 'top' %}active{% endif %}"
+               href="{{ url_for('main_bp.forum', q=query, category=selected_category, sort='top') }}">
                 Top
             </a>
+
         </div>
     </section>
 
+    <!-- POSTS -->
     <section class="forum-list">
+
         {% for post in posts %}
-            <article class="forum-card">
-                <div class="vote-box">
-                    <button class="vote-btn" type="button" aria-label="Replies">
-                        <i class="fa-regular fa-message"></i>
-                    </button>
-                    <span>{{ post.replies }}</span>
-                </div>
+        <article class="forum-card">
 
-                <div class="forum-content">
-                    <div class="forum-meta">
-                        <div class="author-avatar">{{ post.author[0] }}</div>
-                        <div class="meta-text">
-                            <span class="author">{{ post.author }}</span>
-                            <span class="dot">•</span>
-                            <span>{{ post.time_ago }}</span>
-                            <span class="category-pill {% if post.category|lower == 'education' %}blue{% endif %}">
-                                {{ post.category }}
-                            </span>
-                        </div>
+            <div class="vote-box">
+                <button class="vote-btn" type="button">
+                    <i class="fa-regular fa-message"></i>
+                </button>
+                <span>{{ post.replies }}</span>
+            </div>
+
+            <div class="forum-content">
+
+                <!-- TOP META -->
+                <div class="forum-meta">
+
+                    <div class="author-avatar">{{ post.author[0] }}</div>
+
+                    <div class="meta-text">
+                        <span class="author">{{ post.author }}</span>
+                        <span class="dot">•</span>
+                        <span>{{ post.time_ago }}</span>
+
+                        <span class="category-pill">
+                            {{ post.category }}
+                        </span>
                     </div>
 
-                    <h2 class="forum-title">{{ post.title }}</h2>
-
-                    <p class="forum-description">{{ post.content }}</p>
-
-                    <div class="forum-footer">
-                        <span><i class="fa-regular fa-message"></i> {{ post.replies }} replies</span>
-                    </div>
-
-                    <div class="reply-list">
-                        {% for reply in post.reply_items %}
-                            <article class="reply-item">
-                                <div class="reply-head">
-                                    <strong>{{ reply.author }}</strong>
-                                    <span>{{ reply.time_ago }}</span>
-                                </div>
-                                <p>{{ reply.content }}</p>
-                            </article>
-                        {% else %}
-                            <p class="reply-empty">No replies yet. Be the first to answer.</p>
-                        {% endfor %}
-                    </div>
-
+                    <!-- SAVE BUTTON -->
                     {% if is_logged_in %}
-                        <form class="reply-form" method="post" action="/forum/posts/{{ post.id }}/replies">
-                            <input type="hidden" name="q" value="{{ query }}">
-                            <input type="hidden" name="category" value="{{ selected_category }}">
-                            <input type="hidden" name="sort" value="{{ selected_sort }}">
+                    <form method="POST"
+                          action="{{ url_for('main_bp.toggle_post_save', post_id=post.id) }}"
+                          class="save-post-form">
 
-                            <input
-                                type="text"
-                                name="content"
-                                maxlength="280"
-                                required
-                                placeholder="Write a short reply (max 280 chars)..."
-                            >
-                            <button type="submit">Reply</button>
-                        </form>
-                    {% else %}
-                        <p class="login-hint small">
-                            <a href="{{ url_for('auth_bp.login', next=request.path) }}">Log in</a> to reply.
-                        </p>
+                        <button type="submit" class="save-post-btn">
+                            <i class="fa-regular fa-bookmark"></i>
+                        </button>
+
+                    </form>
                     {% endif %}
+
                 </div>
-            </article>
+
+                <h2 class="forum-title">{{ post.title }}</h2>
+
+                <p class="forum-description">{{ post.content }}</p>
+
+                <div class="forum-footer">
+                    <span>
+                        <i class="fa-regular fa-message"></i>
+                        {{ post.replies }} replies
+                    </span>
+                </div>
+
+                <!-- REPLIES -->
+                <div class="reply-list">
+
+                    {% for reply in post.reply_items %}
+                    <article class="reply-item">
+
+                        <div class="reply-head">
+                            <strong>{{ reply.author }}</strong>
+                            <span>{{ reply.time_ago }}</span>
+                        </div>
+
+                        <p>{{ reply.content }}</p>
+
+                    </article>
+                    {% else %}
+                        <p class="reply-empty">
+                            No replies yet. Be the first to answer.
+                        </p>
+                    {% endfor %}
+
+                </div>
+
+                <!-- REPLY -->
+                {% if is_logged_in %}
+                <form class="reply-form"
+                      method="post"
+                      action="/forum/posts/{{ post.id }}/replies">
+
+                    <input type="hidden" name="q" value="{{ query }}">
+                    <input type="hidden" name="category" value="{{ selected_category }}">
+                    <input type="hidden" name="sort" value="{{ selected_sort }}">
+
+                    <input type="text"
+                           name="content"
+                           maxlength="280"
+                           required
+                           placeholder="Write a short reply (max 280 chars)...">
+
+                    <button type="submit">Reply</button>
+
+                </form>
+                {% else %}
+                    <p class="login-hint small">
+                        <a href="{{ url_for('auth_bp.login', next=request.path) }}">Log in</a> to reply.
+                    </p>
+                {% endif %}
+
+            </div>
+        </article>
+
         {% else %}
-            <article class="forum-card forum-empty">
-                <div class="forum-content">
-                    <h2 class="forum-title">No posts found</h2>
-                    <p class="forum-description">Try changing search text, category, or sort.</p>
-                </div>
-            </article>
+
+        <article class="forum-card forum-empty">
+            <div class="forum-content">
+                <h2 class="forum-title">No posts found</h2>
+                <p class="forum-description">Try changing search text, category, or sort.</p>
+            </div>
+        </article>
+
         {% endfor %}
+
     </section>
+
 </div>
 {% endblock %}

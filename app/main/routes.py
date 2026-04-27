@@ -17,6 +17,7 @@ from app.services.content_service import (
 from app.services.user_service import toggle_saved_place, toggle_saved_event
 from app.utils.auth import login_required
 from . import main_bp
+from ..services.db import get_saved_posts_for_user
 
 
 def _forum_redirect_target() -> str:
@@ -144,19 +145,26 @@ def toggle_place_save(place_id: int):
 def saved():
     saved_places = get_places_by_ids(g.current_user.get("saved_place_ids", []))
     saved_events = get_events_by_ids(g.current_user.get("saved_event_ids", []))
+    saved_posts = get_saved_posts_for_user(g.current_user["id"])
     suggested_places = get_recommended_places(g.current_user["interests"], limit=3)
     return render_template(
         "saved.html",
         saved_places=saved_places,
         saved_events=saved_events,
-        suggested_places=suggested_places,
+        saved_posts=saved_posts,
+        suggested_places=suggested_places
     )
 @main_bp.route("/saved-events")
 def saved_events():
     return render_template("savedEvents.html")
 
+@main_bp.route("/posts/<int:post_id>/toggle-save", methods=["POST"])
+@login_required
+def toggle_post_save(post_id):
+    from app.services.db import toggle_saved_post
 
-@main_bp.route("/saved-posts")
-def saved_posts():
-    return render_template("savedPosts.html")
+    is_saved = toggle_saved_post(g.current_user["id"], post_id)
 
+    flash("Post saved." if is_saved else "Post removed.", "success")
+
+    return redirect(request.referrer or url_for("main_bp.forum"))

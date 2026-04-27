@@ -14,11 +14,21 @@
     <p class="subtitle">Your bookmarked places, events, and discussions</p>
 
     <!-- TABS -->
-    <div class="saved-tabs">
-        <button class="tab active" type="button" data-type="places">Places <span>{{ saved_places|length }}</span></button>
-        <button class="tab" type="button" data-type="events">Events <span>{{ saved_events|length }}</span></button>
-        <button class="tab" type="button" data-type="posts">Posts <span>3</span></button>
-    </div>
+   <div class="saved-tabs">
+
+    <button class="tab active" type="button" data-type="places">
+        Places <span>{{ saved_places|length }}</span>
+    </button>
+
+    <button class="tab" type="button" data-type="events">
+        Events <span>{{ saved_events|length }}</span>
+    </button>
+
+    <button class="tab" type="button" data-type="posts">
+        Posts <span>{{ saved_posts|length }}</span>
+    </button>
+
+</div>
 
     <!-- PLACES -->
     <div class="saved-grid" id="places">
@@ -92,34 +102,52 @@
     </div>
 
     <!-- POSTS -->
-    <div class="saved-grid hidden" id="posts">
+<div class="saved-grid hidden" id="posts">
 
+{% if saved_posts %}
+
+    {% for post in saved_posts %}
     <div class="saved-card">
+
         <div class="card-image">
             <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2">
 
             <div class="card-actions">
-                <button class="delete-btn" type="button"><i class="fa-solid fa-trash"></i></button>
-                <button class="link-btn" type="button"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                <button class="delete-btn" type="button">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+
+                <button class="link-btn" type="button">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </button>
             </div>
         </div>
 
         <div class="card-content">
+
             <div class="title-row">
-                <h3>How to find housing in Malmö?</h3>
+                <h3>{{ post.title }}</h3>
                 <span class="rating">💬</span>
             </div>
 
             <p class="location">
-                Student discussion thread
+                {{ post.category }}
             </p>
 
             <div class="card-footer">
                 <span>Saved post</span>
                 <span class="price">Forum</span>
             </div>
+
         </div>
     </div>
+    {% endfor %}
+
+{% else %}
+
+<p class="empty-text">No saved posts yet.</p>
+
+{% endif %}
 
 </div>
 <script>
