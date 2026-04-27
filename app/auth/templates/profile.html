@@ -17,17 +17,24 @@
             </div>
 
             <div class="profile-info">
+<<<<<<< HEAD
                 <h1>{{ user['full_name'] }}</h1>
+=======
+
+                <!-- ✅ FIXED: dynamic name -->
+                <h1>{{ user["full_name"] }}</h1>
+>>>>>>> d8fda2c0b55ebacc3ebfad7f8b4c70526d39545e
 
                 <div class="meta-line">
                     <span><i class="fa-solid fa-location-dot"></i> Malmö, Sweden</span>
                     <span>•</span>
-                    <span><i class="fa-regular fa-calendar"></i> Joined April 2026</span>
+                    <span><i class="fa-regular fa-calendar"></i> Joined Member</span>
                 </div>
 
+                <!-- ✅ FIXED: dynamic welcome text -->
                 <p class="bio">
-                    International student in Malmö exploring cafés, events,
-                    outdoor places and meeting new people.
+                    Welcome back, {{ user["full_name"] }}.
+                    Discover cafés, events, outdoor places and connect with people in Malmö.
                 </p>
 
             </div>
@@ -40,75 +47,81 @@
     <section class="stats-grid">
 
         <div class="stat-card green">
-            <i class="fa-regular fa-bookmark"></i>
-            <h2>12</h2>
-            <p>Places Saved</p>
-        </div>
+    <i class="fa-regular fa-bookmark"></i>
+    <h2>{{ stats.saved_places }}</h2>
+    <p>Places Saved</p>
+</div>
 
-        <div class="stat-card peach">
-            <i class="fa-regular fa-calendar"></i>
-            <h2>8</h2>
-            <p>Events Attended</p>
-        </div>
+<div class="stat-card peach">
+    <i class="fa-regular fa-calendar"></i>
+    <h2>{{ stats.events_attended }}</h2>
+    <p>Events Attended</p>
+</div>
 
-        <div class="stat-card pink">
-            <i class="fa-regular fa-message"></i>
-            <h2>15</h2>
-            <p>Forum Posts</p>
-        </div>
+<div class="stat-card pink">
+    <i class="fa-regular fa-message"></i>
+    <h2>{{ stats.forum_posts }}</h2>
+    <p>Forum Posts</p>
+</div>
 
-        <div class="stat-card sand">
-            <i class="fa-regular fa-star"></i>
-            <h2>6</h2>
-            <p>Reviews Written</p>
-        </div>
+<div class="stat-card sand">
+    <i class="fa-regular fa-star"></i>
+    <h2>{{ stats.reviews }}</h2>
+    <p>Reviews Written</p>
+</div>
 
     </section>
 
     <!-- INFO BOXES -->
     <section class="double-grid">
 
-    <!-- INTERESTS -->
-    <div class="info-card">
+        <!-- INTERESTS -->
+        <div class="info-card">
 
-        <div class="section-title mint">Interests</div>
-
-        <div class="tags-wrap">
-            {% for interest in user["interests"] %}
-                <span class="tag">{{ interest }}</span>
-            {% endfor %}
-        </div>
-
-    </div>
-
-    <!-- PREFERENCES -->
-    <div class="info-card">
-
-        <div class="section-title coral">Preferences</div>
-
-        <div class="pref-group">
-            <label>Favorite Neighborhoods</label>
+            <div class="section-title mint">Interests</div>
 
             <div class="tags-wrap">
-                <span class="tag soft">Centrum</span>
-                <span class="tag soft">Västra Hamnen</span>
-                <span class="tag soft">Möllevången</span>
+
+                {% if user["interests"] %}
+                    {% for interest in user["interests"] %}
+                        <span class="tag">{{ interest }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span class="tag">No interests selected</span>
+                {% endif %}
+
             </div>
+
         </div>
 
-        <div class="pref-group">
-            <label>Budget Preference</label>
-            <span class="tag pink-tag">Moderate (100-200kr)</span>
+        <!-- PREFERENCES -->
+        <div class="info-card">
+
+            <div class="section-title coral">Preferences</div>
+
+            <div class="pref-group">
+                <label>Favorite Neighborhoods</label>
+
+                <div class="tags-wrap">
+                    <span class="tag soft">Centrum</span>
+                    <span class="tag soft">Västra Hamnen</span>
+                    <span class="tag soft">Möllevången</span>
+                </div>
+            </div>
+
+            <div class="pref-group">
+                <label>Budget Preference</label>
+                <span class="tag pink-tag">Moderate (100-200kr)</span>
+            </div>
+
+            <div class="pref-group">
+                <label>Social Style</label>
+                <span class="tag pink-tag">Small intimate gatherings</span>
+            </div>
+
         </div>
 
-        <div class="pref-group">
-            <label>Social Style</label>
-            <span class="tag pink-tag">Small intimate gatherings</span>
-        </div>
-
-    </div>
-
-</section>
+    </section>
 
     <!-- RECENT ACTIVITY -->
     <section class="activity-card">

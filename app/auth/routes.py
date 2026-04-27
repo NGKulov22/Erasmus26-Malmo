@@ -76,11 +76,23 @@ def register():
 
     return render_template("register.html")
 
-
 @auth_bp.route("/profile")
-@login_required
 def profile():
-    return render_template("profile.html", user=g.current_user)
+
+    user = g.current_user
+
+    stats = {
+        "saved_places": 0,
+        "events_attended": 0,
+        "forum_posts": 0,
+        "reviews": 0
+    }
+
+    return render_template(
+        "profile.html",
+        user=user,
+        stats=stats
+    )
 
 
 @auth_bp.route("/logout", methods=["POST"])
