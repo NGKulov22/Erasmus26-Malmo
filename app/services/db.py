@@ -235,6 +235,7 @@ def toggle_saved_post(user_id, post_id):
             """,
             (user_id, post_id)
         )
+        
         connection.commit()
         return False
 

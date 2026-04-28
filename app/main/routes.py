@@ -1,5 +1,5 @@
 from flask import flash, g, redirect, render_template, request, url_for
-from app.services.db import save_user_preferences, get_user_preferences
+from app.services.db import save_user_preferences, get_user_preferences, get_db
 from app.services.content_service import (
     create_forum_post,
     create_forum_reply,
@@ -265,3 +265,28 @@ def recommendations():
         posts=recommended_posts,
         preferences=preferences
     )
+
+@main_bp.route("/forum/posts/<int:post_id>/delete", methods=["POST"])
+@login_required
+def delete_forum_post(post_id):
+    connection = get_db()
+
+    connection.execute(
+        "DELETE FROM forum_replies WHERE post_id = %s",
+        (post_id,)
+    )
+
+    connection.execute(
+        "DELETE FROM user_saved_posts WHERE post_id = %s",
+        (post_id,)
+    )
+
+    connection.execute(
+        "DELETE FROM forum_posts WHERE id = %s",
+        (post_id,)
+    )
+
+    connection.commit()
+
+    flash("Post deleted.", "success")
+    return redirect(url_for("main_bp.forum"))
