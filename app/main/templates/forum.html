@@ -89,46 +89,48 @@
                 <!-- META -->
                 <div class="forum-meta">
 
-                    <div class="author-avatar">
-                        {{ post.author[0] }}
-                    </div>
+    <div class="author-avatar">
+        {{ post.author[0] }}
+    </div>
 
-                    <div class="meta-text">
-                        <span class="author">{{ post.author }}</span>
-                        <span class="dot">•</span>
-                        <span>{{ post.time_ago }}</span>
+    <div class="meta-text">
+        <span class="author">{{ post.author }}</span>
+        <span class="dot">•</span>
+        <span>{{ post.time_ago }}</span>
 
-                        <span class="category-pill">
-                            {{ post.category }}
-                        </span>
-                    </div>
+        <span class="category-pill">
+            {{ post.category }}
+        </span>
+    </div>
 
-                    {% if is_logged_in %}
-                    <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
+    {% if is_logged_in %}
+    <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
 
-                        <!-- SAVE -->
-                        <form method="POST"
-                              action="{{ url_for('main_bp.toggle_post_save', post_id=post.id) }}">
-                            <button type="submit"
-                                    style="border:none;background:none;font-size:22px;cursor:pointer;">
-                                <i class="fa-regular fa-bookmark"></i>
-                            </button>
-                        </form>
+        <!-- SAVE = EVERY POST -->
+        <form method="POST"
+              action="{{ url_for('main_bp.toggle_post_save', post_id=post.id) }}">
+            <button type="submit"
+                    style="border:none;background:none;font-size:22px;cursor:pointer;">
+                <i class="fa-regular fa-bookmark"></i>
+            </button>
+        </form>
 
-                        <!-- DELETE -->
-                        <form method="POST"
-                              action="{{ url_for('main_bp.delete_forum_post', post_id=post.id) }}">
-                            <button type="submit"
-                                    onclick="return confirm('Delete this post?')"
-                                    style="border:none;background:none;font-size:22px;color:#ff6b6b;cursor:pointer;">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </form>
+        <!-- DELETE = ONLY YOUR POSTS -->
+        {% if g.current_user["full_name"] == post.author %}
+        <form method="POST"
+              action="{{ url_for('main_bp.delete_forum_post', post_id=post.id) }}">
+            <button type="submit"
+                    onclick="return confirm('Delete this post?')"
+                    style="border:none;background:none;font-size:22px;color:#ff6b6b;cursor:pointer;">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </form>
+        {% endif %}
 
-                    </div>
-                    {% endif %}
+    </div>
+    {% endif %}
 
-                </div>
+</div>
 
                 <!-- TITLE -->
                 <h2 class="forum-title">{{ post.title }}</h2>
