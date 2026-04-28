@@ -3,7 +3,11 @@ from flask import flash, g, redirect, render_template, request, session, url_for
 from app.services.user_service import authenticate_user, register_user
 from app.utils.auth import login_required
 from . import auth_bp
-
+from app.services.db import (
+    get_saved_places_for_user,
+    get_saved_events_for_user,
+    get_saved_posts_for_user
+)
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -77,15 +81,27 @@ def register():
     return render_template("register.html")
 
 @auth_bp.route("/profile")
+@login_required
 def profile():
-
     user = g.current_user
 
+    # interests fix
+    interests = user.get("interests", "")
+    if isinstance(interests, str):
+        user["interests"] = [x.strip() for x in interests.split(",") if x.strip()]
+    elif interests is None:
+        user["interests"] = []
+
+    # REAL COUNTS FROM DATABASE
+    saved_places = get_saved_places_for_user(user["id"])
+    saved_events = get_saved_events_for_user(user["id"])
+    saved_posts = get_saved_posts_for_user(user["id"])
+
     stats = {
-        "saved_places": 0,
-        "events_attended": 0,
-        "forum_posts": 0,
-        "reviews": 0
+        "saved_places": len(saved_places),
+        "events_attended": len(saved_events),
+        "forum_posts": len(saved_posts),
+        "reviews_written": 0
     }
 
     return render_template(

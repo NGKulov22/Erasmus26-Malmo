@@ -302,3 +302,32 @@ def get_user_preferences(user_id):
     ).fetchone()
 
     return row
+
+def get_saved_places_for_user(user_id: int):
+    connection = get_db()
+
+    rows = connection.execute(
+        """
+        SELECT place_id
+        FROM user_saved_places
+        WHERE user_id = %s
+        """,
+        (user_id,)
+    ).fetchall()
+
+    return rows
+
+
+def get_saved_events_for_user(user_id: int):
+    connection = get_db()
+
+    rows = connection.execute(
+        """
+        SELECT event_id
+        FROM user_saved_events
+        WHERE user_id = %s
+        """,
+        (user_id,)
+    ).fetchall()
+
+    return rows
