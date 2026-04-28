@@ -8,7 +8,8 @@ PLACES = [
         "rating": 4.8,
         "price_label": "$$",
         "tags": ["coffee", "study", "wifi"],
-        "image_url": "https://www.lillakafferosteriet.se/app/uploads/2019/09/lillakafferosteriet-20180706-0039-instagram.jpg"    },
+        "image_url": "https://www.lillakafferosteriet.se/app/uploads/2019/09/lillakafferosteriet-20180706-0039-instagram.jpg",
+    },
     {
         "id": 2,
         "name": "Uggla Kaffebar",
@@ -18,7 +19,8 @@ PLACES = [
         "rating": 4.6,
         "price_label": "$$",
         "tags": ["coffee", "cozy"],
-        "image_url": "https://highfiveskane.se/wp-content/uploads/2021/08/uggla-4.jpeg"    },
+        "image_url": "https://highfiveskane.se/wp-content/uploads/2021/08/uggla-4.jpeg",
+    },
     {
         "id": 3,
         "name": "Noir Kaffekultur",
@@ -28,7 +30,8 @@ PLACES = [
         "rating": 4.7,
         "price_label": "$$",
         "tags": ["coffee", "minimal"],
-        "image_url": "https://highfiveskane.se/wp-content/uploads/2021/08/uggla-4.jpeg"    },
+        "image_url": "https://www.routesnorth.com/wp-content/uploads/2014/10/noir-malmo.jpg",
+    },
     {
         "id": 4,
         "name": "Kaffebaren på Möllan",
@@ -38,7 +41,8 @@ PLACES = [
         "rating": 4.7,
         "price_label": "$$",
         "tags": ["coffee", "social"],
-        "image_url": "https://media-cdn.tripadvisor.com/media/photo-s/0f/9f/ab/5c/kaffebaren-pa-mollan.jpg"    },
+        "image_url": "https://media-cdn.tripadvisor.com/media/photo-s/0f/9f/ab/5c/kaffebaren-pa-mollan.jpg",
+    },
     {
         "id": 5,
         "name": "Solde Kaffebar",
@@ -48,8 +52,8 @@ PLACES = [
         "rating": 4.6,
         "price_label": "$$",
         "tags": ["coffee", "pastries"],
-        "image_url": "https://highfiveskane.se/wp-content/uploads/2021/08/solde-kaffebar-1-scaled.jpg"    },
-
+        "image_url": "https://highfiveskane.se/wp-content/uploads/2021/08/solde-kaffebar-1-scaled.jpg",
+    },
     {
         "id": 6,
         "name": "Surf Shack",
@@ -59,7 +63,8 @@ PLACES = [
         "rating": 4.7,
         "price_label": "$$",
         "tags": ["burgers"],
-        "image_url": "https://www.vinochmatguiden.se/bilder/artikel-hog/5213/malmo-surf-shack-1.jpg"    },
+        "image_url": "https://www.vinochmatguiden.se/bilder/artikel-hog/5213/malmo-surf-shack-1.jpg",
+    },
     {
         "id": 7,
         "name": "Far i Hatten",
@@ -69,7 +74,8 @@ PLACES = [
         "rating": 4.6,
         "price_label": "$$",
         "tags": ["brunch"],
-        "image_url": "https://images.happycow.net/venues/1024/23/00/hcmp23005_1014078.jpeg"    },
+        "image_url": "https://images.happycow.net/venues/1024/23/00/hcmp23005_1014078.jpeg",
+    },
     {
         "id": 8,
         "name": "Saltimporten Canteen",
@@ -79,7 +85,8 @@ PLACES = [
         "rating": 4.8,
         "price_label": "$$$",
         "tags": ["lunch"],
-        "image_url": "https://media-cdn.tripadvisor.com/media/photo-s/0f/b5/a2/e2/img-20170627-133800-hdr.jpg"    },
+        "image_url": "https://media-cdn.tripadvisor.com/media/photo-s/0f/b5/a2/e2/img-20170627-133800-hdr.jpg",
+    },
     {
         "id": 9,
         "name": "Falafel No.1",
@@ -89,7 +96,8 @@ PLACES = [
         "rating": 4.6,
         "price_label": "$",
         "tags": ["falafel"],
-        "image_url": "https://tse3.mm.bing.net/th/id/OIP.vR65679e4ohndS8_zzaEdQHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"    },
+        "image_url": "https://tse3.mm.bing.net/th/id/OIP.vR65679e4ohndS8_zzaEdQHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3",
+    },
     {
         "id": 10,
         "name": "Malmö Saluhall",
@@ -99,8 +107,8 @@ PLACES = [
         "rating": 4.7,
         "price_label": "$$$",
         "tags": ["food hall"],
-        "image_url": "https://www.swedentips.se/wp-content/uploads/2016/11/malmo_saluhall_04.jpg"    },
-
+        "image_url": "https://www.swedentips.se/wp-content/uploads/2016/11/malmo_saluhall_04.jpg",
+    },
     {
         "id": 11,
         "name": "Folkets Park",
@@ -110,7 +118,8 @@ PLACES = [
         "rating": 4.6,
         "price_label": "Free",
         "tags": ["park"],
-        "image_url": "https://southernswedendesigndays.com/sites/default/files/styles/resized_original/public/2023-01/Folkets%20Park%20Gula%20g%E2%80%A0ngen%20V%E2%80%A0r.jpg?itok=htFN1oOB"    },
+        "image_url": "https://www.routesnorth.com/wp-content/uploads/2014/10/noir-malmo.jpg",
+    },
     {
         "id": 12,
         "name": "Pildammsparken",
@@ -120,7 +129,8 @@ PLACES = [
         "rating": 4.8,
         "price_label": "Free",
         "tags": ["nature"],
-        "image_url": "https://www.ratgeber-wissen.com/wp-content/uploads/2024/06/pildammsparken-1024x585.jpg"    },
+        "image_url": "https://www.ratgeber-wissen.com/wp-content/uploads/2024/06/pildammsparken-1024x585.jpg",
+    },
     {
         "id": 13,
         "name": "Kungsparken",
@@ -130,17 +140,19 @@ PLACES = [
         "rating": 4.8,
         "price_label": "Free",
         "tags": ["park"],
-        "image_url": "https://cdn.sanity.io/images/nxpteyfv/goguides/3c6fb771b0de1e97716e5e690185e1585151b416-1600x1066.jpg?fp-x=0.5&fp-y=0.5&w=1351&fit=max&auto=format"    },
+        "image_url": "https://cdn.sanity.io/images/nxpteyfv/goguides/3c6fb771b0de1e97716e5e690185e1585151b416-1600x1066.jpg",
+    },
     {
         "id": 14,
-        "name": "  Beach",
+        "name": "Ribersborg Beach",
         "category": "outdoors",
         "location": "Ribersborg",
         "description": "Popular city beach.",
         "rating": 4.9,
         "price_label": "Free",
         "tags": ["beach"],
-        "image_url": "https://cdn.sanity.io/images/nxpteyfv/goguides/3c6fb771b0de1e97716e5e690185e1585151b416-1600x1066.jpg?fp-x=0.5&fp-y=0.5&w=1351&fit=max&auto=format"    },
+        "image_url": "https://greatruns.com/wp-content/uploads/2019/09/Ribersborg-Beach.jpg",
+    },
     {
         "id": 15,
         "name": "Västra Hamnen",
@@ -150,7 +162,8 @@ PLACES = [
         "rating": 4.9,
         "price_label": "Free",
         "tags": ["waterfront"],
-        "image_url": "https://www.sgbc.se/app/uploads/2020/05/V%C3%A4stra-Hamnen-Malm%C3%B6-Foto-Ossian-K-Olsson-1200x0-c-default.jpg"    },
+        "image_url": "https://malmo.se/images/18.2733061418b156afcffacaec/1697789842225/200616_0080_malmo_drone_jpg.jpg",
+    },
 
     {
         "id": 16,
@@ -533,7 +546,7 @@ EVENTS = [
     "location": "Ribersborg Beach",
     "description": "Beach games, music and summer activities by the sea.",
     "participants": 1800,
-    "image_url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+    "image_url": "https://www.worldbeachguide.com/photos/ribersborg-beach.jpg",
     "organizer": "Malmö Summer"
 },
 {
